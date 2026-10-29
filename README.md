@@ -9,7 +9,7 @@ work. Answers are anonymous and go to a Google Sheet.
 | --- | --- |
 | `index.html` | The survey page |
 | `prototype.html` | The clickable operator screen (`design-demos/dir-2.html` from the IRIS repo; its chat reply is changed for the study) |
-| `side-by-side.mp4`, `side-by-side-poster.jpg` | The video: operator screen and robot arm, 1.5× speed, no sound |
+| `side-by-side.mp4`, `side-by-side-poster.jpg` | The video: operator screen and robot arm, 1.5× speed, no sound (the page plays its first and last 5 seconds at normal speed) |
 | `apps-script.gs` | Receives answers and writes them to the sheet |
 
 ## 1. Answer sheet (Google Sheet)
@@ -82,8 +82,18 @@ including this README and `apps-script.gs`; neither holds anything secret.
 
 ## What is stored
 
-One row per participant: when it arrived, a random response ID, position,
-years in position, the answers, and how many minutes the survey took. No
-name, email, IP address or device details. While someone is answering, their
-answers are kept in their own browser so a reload does not lose them; they
-are removed when the answers are sent.
+One row per participant: when it arrived, a generated response ID, the survey
+start time, position, years in position, the answers, and how many minutes
+the survey took. The page does not ask for a name or email address. While
+someone is answering, their answers are kept in their own browser so a reload
+does not lose them; they are removed when the answers are sent.
+
+What the less obvious columns hold:
+
+| Column | Content |
+| --- | --- |
+| `t1_result` to `t3_result` | "Were you able to complete this task?": Yes / Partly / No / Unsure what to do |
+| `t1_note` to `t3_note` | "What did you do, and what happened?" |
+| `t4_result` | "Based on the information shown, what can you conclude about this set?" (text) |
+| `t4_note` | "What, if anything, would you still need to check before moving it to the next stage?" |
+| `stage` | Where the process could fit; "Another stage: …" includes the stage they typed |

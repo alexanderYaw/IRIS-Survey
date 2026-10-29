@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-10-29T18:25:32.483Z",
+        "reason": "Claude, from Assessment B measurement: .runner-bar padding is calc(10px + env(safe-area-inset-top)) / max(16px, env(...)); the static scan reads env() as 0, but Firefox computed 10/16/10/16px at 1280 and 390px"
+      }
+    ]
+  }
+}

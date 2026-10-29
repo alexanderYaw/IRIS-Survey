@@ -87,7 +87,7 @@
   .btn.big { min-height: 60px; font-size: 19px; }
 
   /* Video */
-  video { width: 100%; max-width: 100%; display: block; aspect-ratio: 2464 / 666; border-radius: 10px; background: var(--line); }
+  video { width: 100%; max-width: 100%; height: auto; display: block; aspect-ratio: 2464 / 666; border-radius: 10px; background: var(--line); }
   .video-labels { display: grid; grid-template-columns: 1280fr 1184fr; gap: 12px; font-size: 15px; color: var(--ink-2); }
   .video-labels b { color: var(--ink); font-family: var(--display); font-weight: 600; }
 
@@ -127,13 +127,13 @@
   <!-- 0: welcome and consent -->
   <section class="screen shell" data-screen="welcome" data-name="Welcome">
     <h1>IRIS sorting study</h1>
-    <p class="lede">IRIS is a robot arm that sorts used surgical instruments from a tray into their positions in the set tray, so staff only need to check the result. We would like your opinion on how it works and on its screen.</p>
+    <p class="lede">IRIS is a prototype robotic system designed to sort surgical instruments from an input tray into designated positions in a receiving tray. This study asks for your feedback on the proposed workflow and operator screen.</p>
     <div class="card">
       <ul>
-        <li>Takes <b>under 10 minutes</b>: a short video, four quick tasks on a clickable screen, and a few questions.</li>
-        <li><b>Anonymous.</b> We ask for your position, not your name. We record your answers and how long the survey took, nothing else.</li>
-        <li>The clickable screen is <b>not connected to a robot</b>. Nothing you press moves anything.</li>
-        <li>We built IRIS, so problems you find are the most useful answers.</li>
+        <li>Estimated time: <b>about 10 minutes</b>. You will watch a short video, try four short tasks on a clickable screen, and answer a few questions.</li>
+        <li>We do not ask for your name or email address. We collect your responses, a generated response ID, the survey start time, and total time taken. Your answers are temporarily saved in this browser so you can continue if the page reloads; they are removed from the browser when you send them.</li>
+        <li>The clickable screen is <b>not connected to a robot</b>. Your actions affect only the on-screen simulation.</li>
+        <li>We are evaluating the design. Please tell us what works, what does not, and what is missing.</li>
         <li>Taking part is voluntary, and you can stop at any time. Questions: <span data-config="contact"></span>.</li>
       </ul>
     </div>
@@ -172,7 +172,7 @@
   <!-- 2: video -->
   <section class="screen shell wide" data-screen="video" data-name="How IRIS works" hidden>
     <h2>Watch IRIS sort a tray</h2>
-    <p class="lede">On the left, the operator's screen. On the right, the robot arm. Both are shown at 1.5× speed and were recorded during separate runs, so they do not match step by step.</p>
+    <p class="lede">On the left, the operator's screen. On the right, the robot arm. The first and last 5 seconds play at normal speed, the rest at 1.5× speed. The two were recorded during separate runs, so they do not match step by step.</p>
     <video id="video" controls playsinline preload="metadata" poster="side-by-side-poster.jpg" width="2464" height="666">
       <source src="side-by-side.mp4" type="video/mp4">
     </video>
@@ -186,10 +186,10 @@
 
   <!-- 3: tasks intro -->
   <section class="screen shell" data-screen="tasks-intro" data-name="Tasks" hidden>
-    <h2>Four quick tasks</h2>
-    <p class="lede">Next you will use a proposed new design of the operator's screen. Each task opens it at a different moment. Do what you would do at work, then press <b>Done</b>.</p>
+    <h2>Four short tasks</h2>
+    <p class="lede">Next you will use a proposed new design of the operator's screen. Each task opens it at a different moment. Do what you would do at work, then press <b>Return to questions</b>, whether or not you finished the task.</p>
     <div class="card">
-      <p>There is no right way to do these, and you cannot break anything. If something is unclear, that is useful for us to know.</p>
+      <p>We are testing the design, not your performance. If you are unsure what to do or cannot complete a task, that is useful feedback.</p>
       <p class="note">The screen works best on a computer or tablet. On a phone, turn it sideways.</p>
     </div>
     <div class="nav"><button class="btn quiet" type="button" data-back>Back</button><button class="btn primary" type="button" data-next>Start task 1</button></div>
@@ -203,7 +203,6 @@
         <p class="prompt"></p>
         <div class="after">
           <button class="btn primary big" type="button" data-open>Open the screen</button>
-          <span class="done-tag" hidden>Done</span>
         </div>
       </div>
       <div class="followup"></div>
@@ -216,6 +215,7 @@
   <!-- 8: rating -->
   <section class="screen shell" data-screen="rating" data-name="The screen" hidden>
     <h2>The screen you just used</h2>
+    <p class="lede">Please rate the proposed operator screen you interacted with during the four tasks.</p>
     <fieldset>
       <legend>This screen's capabilities meet my requirements.</legend>
       <div class="scale" data-scale="umux_capabilities"></div>
@@ -234,17 +234,20 @@
   <section class="screen shell" data-screen="work" data-name="Your work" hidden>
     <h2>IRIS in your work</h2>
     <fieldset>
-      <legend>At which stage would IRIS sorting help you most?</legend>
+      <legend>At which stage, if any, could the proposed sorting process fit into your current workflow?</legend>
       <div class="choices">
-        <label class="choice"><input type="radio" name="stage" value="Before washing"> Before washing, when trays arrive</label>
-        <label class="choice"><input type="radio" name="stage" value="After washing"> After washing, at inspection and assembly</label>
-        <label class="choice"><input type="radio" name="stage" value="Neither"> Neither</label>
-        <label class="choice"><input type="radio" name="stage" value="Not sure"> Not sure</label>
+        <label class="choice"><input type="radio" name="stage" value="Before washing"> Before washing, when instruments arrive</label>
+        <label class="choice"><input type="radio" name="stage" value="After washing"> After washing, during inspection and assembly</label>
+        <label class="choice"><input type="radio" name="stage" value="Both stages"> At both stages</label>
+        <label class="choice"><input type="radio" name="stage" value="Another stage"> At another stage</label>
+        <label class="choice"><input type="radio" name="stage" value="Would not fit"> It would not fit into my current workflow</label>
+        <label class="choice"><input type="radio" name="stage" value="Not enough information"> Not enough information to judge</label>
       </div>
+      <label class="sr" for="stage_other">Which stage?</label>
+      <input type="text" id="stage_other" name="stage_other" placeholder="Which stage?" hidden autocomplete="off">
     </fieldset>
     <fieldset>
       <label class="q" for="influence">What would affect whether IRIS could be used where you work?</label>
-      <p class="q-hint">For example: safety, time, space, trust, training.</p>
       <textarea id="influence" name="influence"></textarea>
     </fieldset>
     <fieldset>
@@ -267,7 +270,7 @@
     <div class="runner-text"><b id="runner-label">Task</b><p id="runner-prompt"></p></div>
     <div class="runner-keys">
       <button class="btn quiet" type="button" id="runner-restart">Start the task again</button>
-      <button class="btn primary" type="button" id="runner-done">Done</button>
+      <button class="btn primary" type="button" id="runner-done">Return to questions</button>
     </div>
   </div>
   <div id="runner-frame"></div>
@@ -284,10 +287,10 @@
 
   // The four tasks. `start` opens the prototype at that screen; `clean` hides its mockup controls.
   const TASKS = [
-    { key: "t1", start: "idle", prompt: "This tray has just arrived at sterile processing. Get it ready to be sorted, and deal with anything the screen asks you. Press Done when you think it is ready." },
-    { key: "t2", start: "ready", prompt: "Before sorting, you notice an extra instrument on the tray that is not part of this set. Tell IRIS about it." },
-    { key: "t3", start: "sorting", prompt: "While the arm is moving, you see that it is about to hit something. Show what you would do." },
-    { key: "t4", start: "result", prompt: "Sorting has finished. Decide whether this set is ready to go to sterilisation." },
+    { key: "t1", start: "idle", title: "Prepare for sorting", prompt: "You have placed a tray in the sorting area. Use the screen to prepare it for sorting. Finish when you believe sorting can begin (you do not need to start it), or when you cannot proceed." },
+    { key: "t2", start: "ready", title: "Extra instrument", prompt: "Before sorting starts, you notice an additional instrument on the input tray that is not listed as part of this set. Show what you would do next." },
+    { key: "t3", start: "sorting", title: "Potential collision", prompt: "The arm is moving, and you notice an object in its path. Show what you would do next." },
+    { key: "t4", start: "result", title: "Review the result", prompt: "Sorting has finished. Review the information shown and decide what you would do next with this set." },
   ];
 
   const answers = {};
@@ -302,26 +305,28 @@
   // ---- Task screens ----
   const tpl = document.getElementById("task-template");
   const box = document.getElementById("task-screens");
-  const expected = (t) => `
+  const completed = (t) => `
     <fieldset>
-      <legend>Did the screen do what you expected?</legend>
+      <legend>Were you able to complete this task?</legend>
       <div class="choices row">
         <label class="choice"><input type="radio" name="${t.key}_result" value="Yes"> Yes</label>
         <label class="choice"><input type="radio" name="${t.key}_result" value="Partly"> Partly</label>
         <label class="choice"><input type="radio" name="${t.key}_result" value="No"> No</label>
+        <label class="choice"><input type="radio" name="${t.key}_result" value="Unsure what to do"> I was unsure what to do</label>
       </div>
-      <label class="sr" for="${t.key}_note">What did you expect, or what was unclear?</label>
-      <textarea id="${t.key}_note" name="${t.key}_note" placeholder="What did you expect, or what was unclear? (optional)"></textarea>
-    </fieldset>`;
-  const finalCheck = (t) => `
+    </fieldset>
     <fieldset>
-      <legend>Is this set ready to go to sterilisation?</legend>
-      <div class="choices row">
-        <label class="choice"><input type="radio" name="${t.key}_result" value="Yes"> Yes</label>
-        <label class="choice"><input type="radio" name="${t.key}_result" value="No"> No</label>
-        <label class="choice"><input type="radio" name="${t.key}_result" value="Cannot tell"> Cannot tell</label>
-      </div>
-      <label class="q" for="${t.key}_note">What did you check, or what else would you check?</label>
+      <label class="q" for="${t.key}_note">What did you do, and what happened? If you were unsure or unable to continue, please describe where.</label>
+      <textarea id="${t.key}_note" name="${t.key}_note"></textarea>
+    </fieldset>`;
+  // The review task asks what the screen tells them, not for a sterilisation decision.
+  const review = (t) => `
+    <fieldset>
+      <label class="q" for="${t.key}_result">Based on the information shown, what can you conclude about this set?</label>
+      <textarea id="${t.key}_result" name="${t.key}_result"></textarea>
+    </fieldset>
+    <fieldset>
+      <label class="q" for="${t.key}_note">What, if anything, would you still need to check before moving it to the next stage?</label>
       <textarea id="${t.key}_note" name="${t.key}_note"></textarea>
     </fieldset>`;
   TASKS.forEach((t, i) => {
@@ -329,9 +334,9 @@
     s.dataset.screen = t.key;
     s.dataset.name = `Task ${i + 1} of ${TASKS.length}`;
     s.dataset.task = String(i);
-    s.querySelector(".label").textContent = `Task ${i + 1} of ${TASKS.length}`;
+    s.querySelector(".label").textContent = `Task ${i + 1} of ${TASKS.length}: ${t.title}`;
     s.querySelector(".prompt").textContent = t.prompt;
-    s.querySelector(".followup").innerHTML = i === TASKS.length - 1 ? finalCheck(t) : expected(t);
+    s.querySelector(".followup").innerHTML = i === TASKS.length - 1 ? review(t) : completed(t);
     if (i < TASKS.length - 1) s.querySelector("[data-next]").textContent = `Next: task ${i + 2}`;
     box.append(s);
   });
@@ -341,6 +346,18 @@
     const name = el.dataset.scale;
     el.innerHTML = Array.from({ length: 7 }, (_, i) => `<label class="choice"><input type="radio" name="${name}" value="${i + 1}"><span>${i + 1}</span></label>`).join("");
   });
+
+  // ---- Video ----
+  // The file is already at 1.5× speed. Its first and last 5 seconds of real time
+  // play at 2/3 of the file's rate, which is normal speed.
+  const video = document.getElementById("video");
+  const EDGE = 5 / 1.5; // seconds of the file
+  const pace = () => {
+    const t = video.currentTime, end = video.duration;
+    const rate = t < EDGE || (end && t > end - EDGE) ? 2 / 3 : 1;
+    if (video.playbackRate !== rate) video.playbackRate = rate;
+  };
+  ["loadedmetadata", "play", "seeked", "timeupdate"].forEach((e) => video.addEventListener(e, pace));
 
   // ---- Restore and record answers ----
   const fields = () => document.querySelectorAll("input[name], textarea[name]");
@@ -352,13 +369,14 @@
     else el.value = v;
   });
   const otherBox = document.getElementById("position_other");
-  const syncOther = () => { otherBox.hidden = answers.position !== "Other"; };
+  const stageBox = document.getElementById("stage_other");
+  const syncOther = () => { otherBox.hidden = answers.position !== "Other"; stageBox.hidden = answers.stage !== "Another stage"; };
   syncOther();
   document.addEventListener("input", (e) => {
     const el = e.target;
     if (!el.name) return;
     answers[el.name] = el.type === "checkbox" ? el.checked : el.value;
-    if (el.name === "position") syncOther();
+    if (el.name === "position" || el.name === "stage") syncOther();
     save();
   });
   document.addEventListener("change", (e) => { if (e.target.type === "radio" || e.target.type === "checkbox") e.target.dispatchEvent(new Event("input", { bubbles: true })); });
@@ -379,7 +397,7 @@
     const pct = Math.round((at / counted) * 100);
     document.getElementById("bar-fill").style.width = `${pct}%`;
     document.getElementById("bar").setAttribute("aria-valuenow", String(pct));
-    if (s.dataset.screen !== "video") document.getElementById("video").pause();
+    if (s.dataset.screen !== "video") video.pause();
     window.scrollTo(0, 0);
     (s.querySelector("h1, h2, .prompt") || s).setAttribute("tabindex", "-1");
     (s.querySelector("h1, h2, .prompt") || s).focus({ preventScroll: true });
@@ -396,9 +414,10 @@
     t1: () => (answers.t1_result ? "" : "Please answer the question about this task."),
     t2: () => (answers.t2_result ? "" : "Please answer the question about this task."),
     t3: () => (answers.t3_result ? "" : "Please answer the question about this task."),
-    t4: () => (answers.t4_result ? "" : "Please say whether the set is ready."),
+    t4: () => ((answers.t4_result || "").trim() ? "" : "Please say what you can conclude about this set."),
     rating: () => (answers.umux_capabilities && answers.umux_easy ? "" : "Please answer both statements."),
-    work: () => (answers.stage ? "" : "Please choose a stage."),
+    work: () => (!answers.stage ? "Please choose an answer about where it could fit." :
+      answers.stage === "Another stage" && !(answers.stage_other || "").trim() ? "Please say which stage." : ""),
   };
   function check(s) {
     const msg = REQUIRED[s.dataset.screen]?.() || "";
@@ -433,7 +452,7 @@
   }
   function openTask(i, button) {
     current = TASKS[i]; opener = button;
-    document.getElementById("runner-label").textContent = `Task ${i + 1} of ${TASKS.length}`;
+    document.getElementById("runner-label").textContent = `Task ${i + 1} of ${TASKS.length}: ${current.title}`;
     document.getElementById("runner-prompt").textContent = current.prompt;
     load(current);
     runner.hidden = false;
@@ -445,7 +464,6 @@
     runner.hidden = true; frameBox.innerHTML = "";
     document.body.style.overflow = "";
     const s = screens[at];
-    s.querySelector(".done-tag").hidden = false;
     opener.textContent = "Open the screen again";
     opener.classList.replace("primary", "quiet");
     current = null;
@@ -473,6 +491,7 @@
     const payload = {};
     FIELDS.forEach((k) => { payload[k] = answers[k] ?? ""; });
     if (payload.position !== "Other") payload.position_other = "";
+    if (payload.stage === "Another stage") payload.stage = `Another stage: ${(answers.stage_other || "").trim()}`;
     button.disabled = true; button.textContent = "Sending...";
     err.hidden = true;
     const body = JSON.stringify(payload);
