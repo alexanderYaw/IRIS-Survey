@@ -150,7 +150,7 @@ What the less obvious columns hold:
 | `t3_result` | "Based on the information shown, what can you conclude about this set?" (text), given before they are told that the labels for slots 2 and 4 were swapped on purpose; see "Task 3" |
 | `t3_spot` | "How easy or difficult would it be to spot a wrongly labelled instrument in a photo like this?" 0 (very difficult) to 10 (very easy) |
 | `t3_confidence` | "As a check on IRIS's sorting, how much confidence would a labelled photo like this give you that a set was sorted correctly?" 0 (no confidence) to 10 (complete confidence) |
-| `t2_frequency` | How often a tray has an instrument not in its set, or is missing one: Never / About 1 in 100 operations or fewer / About 1 in 50 operations / About 1 in 10 operations / More often than 1 in 10 operations / Not sure |
+| `t2_frequency` | How often a tray has an instrument not in its set, or is missing one: Never / Rarely (about 1 in 100 trays or fewer) / About 1 in 50 trays / About 1 in 10 trays / More often than 1 in 10 trays / Not sure |
 | `t2_convenient` | How convenient typing to IRIS at the sorting station would be, 0 (very inconvenient) to 10 (very convenient) |
 | `stage` | Where the process could fit; "Another stage: …" includes the stage they typed |
 | `elsewhere` | "Apart from sorting, where else in your work could a system that recognises and counts instruments help?" |

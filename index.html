@@ -115,8 +115,10 @@
 
   /* Video */
   video { width: 100%; max-width: 100%; height: auto; display: block; aspect-ratio: 2464 / 666; border-radius: 10px; background: var(--line); }
-  .video-labels { display: grid; grid-template-columns: 1280fr 1184fr; gap: 12px; font-size: 15px; color: var(--ink-2); }
+  .video-labels { display: grid; grid-template-columns: 1280fr 1184fr; gap: 12px; font-size: 15px; color: var(--ink-2); text-align: center; }
   .video-labels b { color: var(--ink); font-family: var(--display); font-weight: 600; }
+  .video-steps { display: grid; gap: 8px; }
+  .video-steps ol { margin: 0; padding-left: 24px; display: grid; gap: 6px; }
 
   /* Task, and the notice about unfinished answers */
   .task-card, .notice { background: var(--accent-soft); border-radius: 12px; padding: 18px 20px; display: grid; gap: 14px; justify-items: start; }
@@ -246,7 +248,16 @@
       <source src="side-by-side.mp4" type="video/mp4">
     </video>
     <div class="video-labels"><span><b>The operator's screen</b></span><span><b>The robot arm</b></span></div>
-    <p class="note">Under 2 minutes, no sound, about 11 MB to load. On a phone, use the full-screen button and turn your phone sideways.</p>
+    <div class="measure video-steps">
+      <p>In the video, the operator follows the standard steps:</p>
+      <ol>
+        <li>Presses <b>Check the next tray</b>. The camera finds the instruments on the input tray.</li>
+        <li>Presses <b>Start sorting</b>. IRIS picks the instruments in an order that does not disturb the pile.</li>
+        <li>The arm moves each instrument into its slot in the receiving tray, one at a time.</li>
+        <li>When all are placed, the camera photographs the receiving tray. The operator checks that each instrument is labelled correctly, in the right slot.</li>
+      </ol>
+      <p class="note">Most of the video plays at 1.5× speed.</p>
+    </div>
     <fieldset class="measure">
       <label class="q" for="video_note">What stood out to you? <span class="note">(optional)</span></label>
       <textarea id="video_note" name="video_note"></textarea>
@@ -398,11 +409,12 @@
       useful: "How useful would the tray check be in your work?" },
     { key: "t2", start: "ready&extra", title: "Extra instrument", prompt: "Before sorting starts, you notice an additional instrument on the input tray, a No. 3L handle, that is not listed as part of this set. Show what you would do next.",
       useful: "How useful would the chat be for telling IRIS that a tray does not match the set?" },
-    { key: "t3", photo: true, title: "Review the result", prompt: "Sorting has finished. This is the photo IRIS took of the receiving tray, with each instrument labelled. Review it and decide what you would do next with this set." },
+    { key: "t3", photo: true, title: "Review the result", prompt: "This is a different tray from task 2. Its set has five instruments, including a No. 3L handle. Sorting has finished, and this is the photo IRIS took of the receiving tray, with each instrument labelled. Review it and decide what you would do next with this set." },
   ];
 
   // Answers are kept in this browser until they are sent, cleared, or KEEP_HOURS old.
-  const STORE = "iris-study-v1";
+  // v2: the three-task version; unfinished answers saved by the four-task version are not reused.
+  const STORE = "iris-study-v2";
   const KEEP_HOURS = 8;
   const answers = {};
   try { Object.assign(answers, JSON.parse(localStorage.getItem(STORE) || "{}")); } catch (e) {}
@@ -458,7 +470,7 @@
   const ratings = (t) => rate(`${t.key}_ease`, "How easy or difficult was this task?", "Very difficult", "Very easy") +
     (t.useful ? rate(`${t.key}_useful`, t.useful, "Not useful at all", "Very useful") : "");
   // Task 2 also asks how often a tray does not match its set, and whether typing at the station suits them.
-  const FREQUENCY = ["Never", "About 1 in 100 operations or fewer", "About 1 in 50 operations", "About 1 in 10 operations", "More often than 1 in 10 operations", "Not sure"];
+  const FREQUENCY = ["Never", "Rarely (about 1 in 100 trays or fewer)", "About 1 in 50 trays", "About 1 in 10 trays", "More often than 1 in 10 trays", "Not sure"];
   const mismatch = () => `
     <fieldset>
       <legend>In your work, how often does a tray have an instrument that is not part of its set, or is missing one?</legend>
