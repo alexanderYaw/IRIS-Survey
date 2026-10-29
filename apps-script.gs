@@ -2,11 +2,16 @@
 // the "Responses" sheet. Paste into the Google Sheet's Extensions > Apps Script
 // and deploy as a web app (see README.md).
 
-const SHEET_NAME = "Responses";
-// Column order; the page sends these keys. "received_at" is added here.
+// Each version whose columns change writes to a new tab with its own header.
+// Version 3: three tasks (the collision task removed; task 3 is the photo review).
+// Older "Responses" and "Responses v2" tabs (test rows only) can be deleted.
+const SHEET_NAME = "Responses v3";
+// Column order; the page sends these keys (keep in step with FIELDS in index.html). "received_at" is added here.
 const FIELDS = ["response_id", "started_at", "minutes_taken", "position", "position_other", "years", "video_note",
-  "t1_result", "t1_note", "t2_result", "t2_note", "t3_result", "t3_note", "t4_result", "t4_note",
-  "umux_capabilities", "umux_easy", "stage", "influence", "other"];
+  "t1_result", "t1_note", "t1_ease", "t1_useful",
+  "t2_result", "t2_note", "t2_ease", "t2_useful", "t2_frequency", "t2_convenient",
+  "t3_result", "t3_spot", "t3_confidence",
+  "umux_capabilities", "umux_easy", "stage", "influence", "elsewhere", "other"];
 const MAX_TEXT = 4000;
 
 function doPost(e) {

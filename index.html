@@ -17,17 +17,19 @@
     --ink: #16201c;
     --ink-2: #4b5752;
     --line: #d6ddd9;
+    --field-line: #7f8a85; /* text box borders: 3:1 so the box can be seen */
     --accent: #1e6a56;
     --accent-ink: #ffffff;
     --accent-soft: #e1eee8;
     --warn: #8a3b12;
+    --runner-bg: #e4e1da; /* the prototype's own background; it is always light */
     --display: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
     --body: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #101614; --surface: #19211e; --ink: #e7ede9; --ink-2: #a8b4af; --line: #2c3833;
+      --bg: #101614; --surface: #19211e; --ink: #e7ede9; --ink-2: #a8b4af; --line: #2c3833; --field-line: #66756e;
       --accent: #63c3a3; --accent-ink: #0b1411; --accent-soft: #1b2f28; --warn: #ffb48a; color-scheme: dark;
     }
   }
@@ -41,10 +43,13 @@
   p { margin: 0; }
   [hidden] { display: none !important; }
   :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+  /* Headings and questions take focus only so screen readers announce them; Tab never reaches them. */
+  [tabindex="-1"]:focus { outline: none; }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
   .shell { max-width: 760px; margin: 0 auto; }
   .shell.wide { max-width: 1240px; }
+  .measure { max-width: 760px; }
 
   /* Progress */
   .progress { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding: 14px 0 12px; display: grid; gap: 8px; }
@@ -60,45 +65,69 @@
   .lede { font-size: 19px; color: var(--ink-2); max-width: 62ch; }
   .card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; display: grid; gap: 12px; }
   .card ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+  .card h2 { font-size: 21px; }
+  .card p + h2 { margin-top: 10px; }
+
+  /* The proposed workflow: who does each step */
+  .flow { list-style: none; margin: 0; padding: 0; display: grid; gap: 30px; }
+  .flow li { position: relative; display: grid; grid-template-columns: 58px minmax(0, 1fr); gap: 12px; align-items: start; }
+  /* An arrow centred between each tag and the next one, however many lines the step has:
+     the box runs from the tag's bottom (2px margin + 24.6px tag) to the next tag's top (30px gap + 2px margin). */
+  .flow li:not(:last-child)::after { content: ""; position: absolute; left: 23px; width: 12px; top: 27px; bottom: -32px; background: var(--ink-2); -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 20'%3E%3Cpath d='M6 1v17M1.5 13.5 6 18l4.5-4.5' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 12px 20px no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 20'%3E%3Cpath d='M6 1v17M1.5 13.5 6 18l4.5-4.5' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 12px 20px no-repeat; }
+  .who { margin-top: 2px; padding: 5px 0 4px; border-radius: 6px; text-align: center; font: 700 13px/1.2 var(--display); letter-spacing: 0.05em; text-transform: uppercase; }
+  .who.you { background: var(--accent); color: var(--accent-ink); }
+  .who.iris { background: var(--line); color: var(--ink); }
   .note { font-size: 15px; color: var(--ink-2); }
 
-  /* Questions */
+  /* Questions: tight inside a question, wide between questions */
   fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 10px; min-width: 0; }
+  .screen > fieldset + fieldset { margin-top: 12px; }
+  .followup { display: grid; gap: 32px; }
   legend, .q { font: 600 19px/1.35 var(--display); padding: 0; margin-bottom: 4px; }
-  .q-hint { font-size: 15px; color: var(--ink-2); margin-top: -6px; }
   .choices { display: grid; gap: 8px; }
   .choices.row { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); }
   .choice { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 10px 14px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); cursor: pointer; }
   .choice:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
   .choice input { width: 20px; height: 20px; accent-color: var(--accent); flex: none; margin: 0; }
+  .other { display: grid; gap: 6px; padding-top: 4px; }
   .scale { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
   .scale .choice { flex-direction: column; justify-content: center; gap: 4px; min-height: 64px; padding: 8px 4px; font: 600 17px/1 var(--display); }
-  .scale-ends { display: flex; justify-content: space-between; font-size: 14px; color: var(--ink-2); }
-  textarea, input[type="text"] { width: 100%; font: inherit; color: var(--ink); background: var(--surface); border: 1.5px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+  .scale-ends { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; color: var(--ink-2); }
+  .scale-ends span:last-child { text-align: right; }
+  /* 0-10 number line */
+  .scale.eleven { grid-template-columns: repeat(11, minmax(0, 1fr)); gap: 4px; }
+  .scale.eleven .choice { min-height: 60px; padding: 8px 0; }
+  textarea, input[type="text"] { width: 100%; font: inherit; color: var(--ink); background: var(--surface); border: 1.5px solid var(--field-line); border-radius: 10px; padding: 12px 14px; }
   textarea { min-height: 88px; resize: vertical; }
   .error { color: var(--warn); font-weight: 700; font-size: 16px; }
 
   /* Buttons */
-  .nav { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; padding-top: 8px; }
+  .nav { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; padding-top: 16px; }
   .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; padding: 0 22px; border-radius: 10px; border: 0; font: 600 17px/1 var(--display); cursor: pointer; text-decoration: none; touch-action: manipulation; }
   .btn.primary { background: var(--accent); color: var(--accent-ink); }
   .btn.quiet { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--line); }
   .btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .btn.big { min-height: 60px; font-size: 19px; }
+  .link { font: inherit; color: var(--ink); background: none; border: 0; padding: 0; min-height: 44px; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+
+  /* Stop and clear, under every step */
+  .stop { display: flex; flex-wrap: wrap; align-items: center; gap: 0 8px; margin-top: 40px; padding-top: 8px; border-top: 1px solid var(--line); font-size: 15px; color: var(--ink-2); }
 
   /* Video */
   video { width: 100%; max-width: 100%; height: auto; display: block; aspect-ratio: 2464 / 666; border-radius: 10px; background: var(--line); }
   .video-labels { display: grid; grid-template-columns: 1280fr 1184fr; gap: 12px; font-size: 15px; color: var(--ink-2); }
   .video-labels b { color: var(--ink); font-family: var(--display); font-weight: 600; }
 
-  /* Task */
-  .task-card { background: var(--accent-soft); border-radius: 12px; padding: 18px 20px; display: grid; gap: 14px; }
-  .task-card .label { font: 600 13px/1 var(--display); letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); }
+  /* Task, and the notice about unfinished answers */
+  .task-card, .notice { background: var(--accent-soft); border-radius: 12px; padding: 18px 20px; display: grid; gap: 14px; justify-items: start; }
   .task-card .prompt { font-size: 21px; font-weight: 700; line-height: 1.35; }
-  .task-card .after { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
-  .done-tag { color: var(--accent); font-weight: 700; }
+  /* Task 3: the labelled result photo, shown as a picture */
+  .review-shot { margin: 0; display: grid; gap: 6px; width: 100%; }
+  .review-shot img { display: block; width: 100%; height: auto; border-radius: 12px; background: #10201c; }
+  .review-shot figcaption { font-size: 15px; color: var(--ink-2); }
 
-  .runner { position: fixed; inset: 0; z-index: 20; display: grid; grid-template-rows: auto minmax(0, 1fr); background: #e4e1da; }
+  .runner { position: fixed; inset: 0; z-index: 20; display: grid; grid-template-rows: auto minmax(0, 1fr); background: var(--runner-bg); }
+  .runner:focus { outline: none; }
   .runner-bar {
     display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; background: var(--surface); border-bottom: 1px solid var(--line);
     padding: calc(10px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 10px max(16px, env(safe-area-inset-left, 0px));
@@ -107,11 +136,31 @@
   .runner-text b { display: block; font: 600 13px/1.2 var(--display); letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); }
   .runner-text p { font-size: 17px; font-weight: 700; line-height: 1.35; }
   .runner-keys { display: flex; flex-wrap: wrap; gap: 8px; }
+  .runner-body { position: relative; min-height: 0; }
+  #runner-frame { height: 100%; }
   .runner iframe { width: 100%; height: 100%; border: 0; display: block; }
+  #runner-more, .runner-rotate { display: none; }
+
+  /* A phone held upright is too narrow for the operator screen. */
+  @media (orientation: portrait) and (max-width: 700px) {
+    .runner-rotate { position: absolute; inset: 0; display: grid; place-content: center; gap: 8px; padding: 24px; text-align: center; background: var(--bg); color: var(--ink-2); }
+    .runner-rotate b { font: 600 24px/1.25 var(--display); color: var(--ink); }
+  }
+  /* A phone held sideways is short: the task shrinks to one line. */
+  @media (max-height: 500px) {
+    .runner-bar { padding-top: calc(6px + env(safe-area-inset-top, 0px)); padding-bottom: 6px; gap: 6px 12px; }
+    .runner-text p { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; font-size: 15px; }
+    .runner-text.open p { display: block; }
+    .runner .btn { min-height: 44px; padding: 0 14px; font-size: 15px; }
+    #runner-more { display: inline-flex; }
+  }
 
   @media (max-width: 560px) {
     .scale { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
     .scale .choice { min-height: 56px; font-size: 15px; }
+    .scale.eleven { gap: 3px; }
+    .scale.eleven .choice { min-height: 54px; padding: 6px 0; border-radius: 7px; font-size: 14px; }
+    .scale.eleven .choice input { width: 18px; height: 18px; }
     .video-labels { grid-template-columns: 1fr; gap: 2px; }
   }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
@@ -128,18 +177,37 @@
   <section class="screen shell" data-screen="welcome" data-name="Welcome">
     <h1>IRIS sorting study</h1>
     <p class="lede">IRIS is a prototype robotic system designed to sort surgical instruments from an input tray into designated positions in a receiving tray. This study asks for your feedback on the proposed workflow and operator screen.</p>
+    <div class="notice" id="resume" hidden>
+      <p><b>This browser has unfinished answers</b><span id="resume-age"></span>. If they are yours, tick the box below and continue. If not, start again and they will be deleted.</p>
+      <button class="btn quiet" type="button" id="start-over">Start again</button>
+    </div>
+    <section class="card" aria-labelledby="fit-title">
+      <h2 id="fit-title">Where IRIS would be used</h2>
+      <p>IRIS would work in the CSSD, at a sorting station where a set is prepared. We have not decided whether this would be when instruments arrive, before washing, or after washing, during inspection and assembly. One of the questions asks what you think.</p>
+      <h2 id="role-title">The proposed workflow, and your part in it</h2>
+      <p>The person at the sorting station is the operator. In this study, that is you.</p>
+      <ol class="flow" aria-labelledby="role-title">
+        <li><span class="who you">You<span class="sr">:</span></span><span>Place the tray of instruments at the sorting station, next to an empty receiving tray.</span></li>
+        <li><span class="who iris">IRIS<span class="sr">:</span></span><span>Checks the tray with its camera against the list of instruments in the set, and shows what it found.</span></li>
+        <li><span class="who you">You<span class="sr">:</span></span><span>Answer any questions from IRIS, decide what to do if the tray does not match the set, then start sorting.</span></li>
+        <li><span class="who iris">IRIS<span class="sr">:</span></span><span>Moves each instrument into its position in the receiving tray.</span></li>
+        <li><span class="who you">You<span class="sr">:</span></span><span>Stay at the station, within reach of the STOP button, until sorting ends. Alerts appear only on the screen.</span></li>
+        <li><span class="who iris">IRIS<span class="sr">:</span></span><span>Takes a photo of the receiving tray and labels each instrument in it.</span></li>
+        <li><span class="who you">You<span class="sr">:</span></span><span>Check the result before the set moves to the next stage.</span></li>
+      </ol>
+      <p class="note">IRIS does not inspect instruments for damage or cleanliness; that stays with staff.</p>
+    </section>
     <div class="card">
       <ul>
-        <li>Estimated time: <b>about 10 minutes</b>. You will watch a short video, try four short tasks on a clickable screen, and answer a few questions.</li>
-        <li>We do not ask for your name or email address. We collect your responses, a generated response ID, the survey start time, and total time taken. Your answers are temporarily saved in this browser so you can continue if the page reloads; they are removed from the browser when you send them.</li>
-        <li>The clickable screen is <b>not connected to a robot</b>. Your actions affect only the on-screen simulation.</li>
-        <li>We are evaluating the design. Please tell us what works, what does not, and what is missing.</li>
-        <li>Taking part is voluntary, and you can stop at any time. Questions: <span data-config="contact"></span>.</li>
+        <li><b>About 12 minutes:</b> a short video, two tasks on a clickable screen, a photo to review, and a few questions.</li>
+        <li>The clickable screen is <b>not connected to a robot</b>.</li>
+        <li>We built IRIS, so problems you find are the most useful answers.</li>
+        <li>Taking part is voluntary; you can stop at any time. Questions: <span data-config="contact"></span>.</li>
       </ul>
     </div>
     <label class="choice" for="consent"><input type="checkbox" id="consent" name="consent"> I have read this and agree to take part.</label>
-    <p class="error" data-error hidden></p>
-    <div class="nav"><span></span><button class="btn primary big" type="button" data-next>Start</button></div>
+    <p class="error" data-error role="alert" hidden></p>
+    <div class="nav"><span></span><button class="btn primary big" type="button" id="start" data-next>Start</button></div>
   </section>
 
   <!-- 1: about you -->
@@ -153,8 +221,10 @@
         <label class="choice"><input type="radio" name="position" value="Nurse"> Nurse</label>
         <label class="choice"><input type="radio" name="position" value="Other"> Other</label>
       </div>
-      <label class="sr" for="position_other">Your position</label>
-      <input type="text" id="position_other" name="position_other" placeholder="Your position" hidden autocomplete="off">
+      <div class="other" id="position_other_box" hidden>
+        <label class="note" for="position_other">Your position</label>
+        <input type="text" id="position_other" name="position_other" autocomplete="off">
+      </div>
     </fieldset>
     <fieldset>
       <legend>How long have you worked in this position?</legend>
@@ -165,19 +235,19 @@
         <label class="choice"><input type="radio" name="years" value="Over 10 years"> Over 10 years</label>
       </div>
     </fieldset>
-    <p class="error" data-error hidden></p>
+    <p class="error" data-error role="alert" hidden></p>
     <div class="nav"><button class="btn quiet" type="button" data-back>Back</button><button class="btn primary" type="button" data-next>Next</button></div>
   </section>
 
   <!-- 2: video -->
   <section class="screen shell wide" data-screen="video" data-name="How IRIS works" hidden>
     <h2>Watch IRIS sort a tray</h2>
-    <p class="lede">On the left, the operator's screen. On the right, the robot arm. The first and last 5 seconds play at normal speed, the rest at 1.5× speed. The two were recorded during separate runs, so they do not match step by step.</p>
     <video id="video" controls playsinline preload="metadata" poster="side-by-side-poster.jpg" width="2464" height="666">
       <source src="side-by-side.mp4" type="video/mp4">
     </video>
-    <div class="video-labels"><span><b>The operator's screen</b></span><span><b>The robot arm</b> (it finishes first and then holds still)</span></div>
-    <fieldset class="shell" style="width:100%">
+    <div class="video-labels"><span><b>The operator's screen</b></span><span><b>The robot arm</b></span></div>
+    <p class="note">Under 2 minutes, no sound, about 11 MB to load. On a phone, use the full-screen button and turn your phone sideways.</p>
+    <fieldset class="measure">
       <label class="q" for="video_note">What stood out to you? <span class="note">(optional)</span></label>
       <textarea id="video_note" name="video_note"></textarea>
     </fieldset>
@@ -186,8 +256,8 @@
 
   <!-- 3: tasks intro -->
   <section class="screen shell" data-screen="tasks-intro" data-name="Tasks" hidden>
-    <h2>Four short tasks</h2>
-    <p class="lede">Next you will use a proposed new design of the operator's screen. Each task opens it at a different moment. Do what you would do at work, then press <b>Return to questions</b>, whether or not you finished the task.</p>
+    <h2>Three short tasks</h2>
+    <p class="lede">In tasks 1 and 2 you will use a proposed new design of the operator's screen, opened at different moments. Do what you would do at work, then press <b>Return to questions</b>, whether or not you finished the task. Task 3 shows a photo from the screen to review.</p>
     <div class="card">
       <p>We are testing the design, not your performance. If you are unsure what to do or cannot complete a task, that is useful feedback.</p>
       <p class="note">The screen works best on a computer or tablet. On a phone, turn it sideways.</p>
@@ -198,24 +268,36 @@
   <!-- 4-7: tasks (filled from TASKS) -->
   <template id="task-template">
     <section class="screen shell" data-screen="" data-name="" hidden>
+      <h2></h2>
       <div class="task-card">
-        <span class="label"></span>
         <p class="prompt"></p>
-        <div class="after">
-          <button class="btn primary big" type="button" data-open>Open the screen</button>
-        </div>
+        <button class="btn primary big" type="button" data-open>Open the screen</button>
       </div>
-      <div class="followup"></div>
-      <p class="error" data-error hidden></p>
-      <div class="nav"><button class="btn quiet" type="button" data-back>Back</button><button class="btn primary" type="button" data-next>Next</button></div>
+      <div class="followup" hidden></div>
+      <p class="error" data-error role="alert" hidden></p>
+      <div class="nav"><button class="btn quiet" type="button" data-back>Back</button><button class="btn primary" type="button" data-next hidden>Next</button></div>
     </section>
   </template>
   <div id="task-screens"></div>
 
+  <!-- After task 3: the deliberate label error, then two ratings. No Back: the
+       answer about the photo is kept as it was given before the error was shown. -->
+  <section class="screen shell" data-screen="t3-reveal" data-name="Task 3 of 3" hidden>
+    <h2>About the photo you just reviewed</h2>
+    <div class="task-card">
+      <p class="prompt">Two labels in this photo were wrong on purpose.</p>
+      <p>The tissue forceps in slot 2 were labelled “Artery forceps”, and the artery forceps in slot 4 were labelled “Tissue forceps”. We did this to see whether the photo helps people catch a mistake.</p>
+      <div data-photo></div>
+    </div>
+    <div class="followup" id="reveal-questions"></div>
+    <p class="error" data-error role="alert" hidden></p>
+    <div class="nav"><span></span><button class="btn primary" type="button" data-next>Next</button></div>
+  </section>
+
   <!-- 8: rating -->
   <section class="screen shell" data-screen="rating" data-name="The screen" hidden>
     <h2>The screen you just used</h2>
-    <p class="lede">Please rate the proposed operator screen you interacted with during the four tasks.</p>
+    <p class="lede">Please rate the proposed operator screen you interacted with in tasks 1 and 2.</p>
     <fieldset>
       <legend>This screen's capabilities meet my requirements.</legend>
       <div class="scale" data-scale="umux_capabilities"></div>
@@ -226,7 +308,7 @@
       <div class="scale" data-scale="umux_easy"></div>
       <div class="scale-ends"><span>Strongly disagree</span><span>Strongly agree</span></div>
     </fieldset>
-    <p class="error" data-error hidden></p>
+    <p class="error" data-error role="alert" hidden></p>
     <div class="nav"><button class="btn quiet" type="button" data-back>Back</button><button class="btn primary" type="button" data-next>Next</button></div>
   </section>
 
@@ -243,37 +325,58 @@
         <label class="choice"><input type="radio" name="stage" value="Would not fit"> It would not fit into my current workflow</label>
         <label class="choice"><input type="radio" name="stage" value="Not enough information"> Not enough information to judge</label>
       </div>
-      <label class="sr" for="stage_other">Which stage?</label>
-      <input type="text" id="stage_other" name="stage_other" placeholder="Which stage?" hidden autocomplete="off">
+      <div class="other" id="stage_other_box" hidden>
+        <label class="note" for="stage_other">Which stage?</label>
+        <input type="text" id="stage_other" name="stage_other" autocomplete="off">
+      </div>
     </fieldset>
     <fieldset>
       <label class="q" for="influence">What would affect whether IRIS could be used where you work?</label>
       <textarea id="influence" name="influence"></textarea>
     </fieldset>
     <fieldset>
+      <label class="q" for="elsewhere">Apart from sorting, where else in your work could a system that recognises and counts instruments help?</label>
+      <textarea id="elsewhere" name="elsewhere"></textarea>
+    </fieldset>
+    <fieldset>
       <label class="q" for="other">Anything else you want to tell us? <span class="note">(optional)</span></label>
       <textarea id="other" name="other"></textarea>
     </fieldset>
-    <p class="error" data-error hidden></p>
+    <p class="error" data-error role="alert" hidden></p>
     <div class="nav"><button class="btn quiet" type="button" data-back>Back</button><button class="btn primary big" type="button" data-submit>Send my answers</button></div>
   </section>
 
   <!-- 10: thanks -->
   <section class="screen shell" data-screen="thanks" data-name="Done" hidden>
-    <h1 tabindex="-1" id="thanks-title">Thank you</h1>
+    <h1>Thank you</h1>
     <p class="lede">Your answers have been sent. You can close this page.</p>
+    <p id="thanks-check" hidden>The answer sheet did not confirm that your answers arrived. If you can, please send this code to <span data-config="contact"></span> so we can check: <b id="thanks-code"></b></p>
+    <p class="note">Questions about the study: <span data-config="contact"></span>.</p>
+  </section>
+
+  <!-- 11: stopped -->
+  <section class="screen shell" data-screen="stopped" data-name="Stopped" hidden>
+    <h1>Your answers were cleared</h1>
+    <p class="lede">Nothing was sent, and nothing is kept in this browser. You can close this page.</p>
+    <div class="nav"><span></span><button class="btn quiet" type="button" id="restart">Start the survey again</button></div>
   </section>
 </main>
 
-<div class="runner" id="runner" role="dialog" aria-modal="true" aria-labelledby="runner-label" hidden>
+<div class="stop shell" id="stop" hidden>You can stop at any time. <button class="link" type="button" id="stop-clear">Stop and clear my answers</button></div>
+
+<div class="runner" id="runner" role="dialog" aria-modal="true" aria-labelledby="runner-label" aria-describedby="runner-prompt" tabindex="-1" hidden>
   <div class="runner-bar">
     <div class="runner-text"><b id="runner-label">Task</b><p id="runner-prompt"></p></div>
     <div class="runner-keys">
+      <button class="btn quiet" type="button" id="runner-more" aria-expanded="false" aria-controls="runner-prompt">Read full task</button>
       <button class="btn quiet" type="button" id="runner-restart">Start the task again</button>
       <button class="btn primary" type="button" id="runner-done">Return to questions</button>
     </div>
   </div>
-  <div id="runner-frame"></div>
+  <div class="runner-body">
+    <div id="runner-frame"></div>
+    <div class="runner-rotate"><b>Turn your phone sideways</b><p>The operator's screen needs the width of a computer, a tablet, or a phone turned sideways.</p></div>
+  </div>
 </div>
 
 <script>
@@ -285,21 +388,33 @@
     contact: "Alexander Yaw (e1384328@u.nus.edu)",
   };
 
-  // The four tasks. `start` opens the prototype at that screen; `clean` hides its mockup controls.
+  // The three tasks. `start` opens the prototype at that screen ("&extra": task 2's
+  // four-instrument set with an extra instrument on the tray); `clean` hides its mockup
+  // controls. Task 3 (`photo`) shows a picture of the result screen instead: the labelled
+  // photo with the slot 2 and slot 4 names swapped on purpose, rendered from
+  // prototype.html#result&mislabel into review-photo.jpg and review-photo-narrow.jpg.
   const TASKS = [
-    { key: "t1", start: "idle", title: "Prepare for sorting", prompt: "You have placed a tray in the sorting area. Use the screen to prepare it for sorting. Finish when you believe sorting can begin (you do not need to start it), or when you cannot proceed." },
-    { key: "t2", start: "ready", title: "Extra instrument", prompt: "Before sorting starts, you notice an additional instrument on the input tray that is not listed as part of this set. Show what you would do next." },
-    { key: "t3", start: "sorting", title: "Potential collision", prompt: "The arm is moving, and you notice an object in its path. Show what you would do next." },
-    { key: "t4", start: "result", title: "Review the result", prompt: "Sorting has finished. Review the information shown and decide what you would do next with this set." },
+    { key: "t1", start: "idle", title: "Prepare for sorting", prompt: "You have placed a tray in the sorting area. Use the screen to prepare it for sorting. Finish when you believe sorting can begin (you do not need to start it), or when you cannot proceed.",
+      useful: "How useful would the tray check be in your work?" },
+    { key: "t2", start: "ready&extra", title: "Extra instrument", prompt: "Before sorting starts, you notice an additional instrument on the input tray, a No. 3L handle, that is not listed as part of this set. Show what you would do next.",
+      useful: "How useful would the chat be for telling IRIS that a tray does not match the set?" },
+    { key: "t3", photo: true, title: "Review the result", prompt: "Sorting has finished. This is the photo IRIS took of the receiving tray, with each instrument labelled. Review it and decide what you would do next with this set." },
   ];
 
-  const answers = {};
+  // Answers are kept in this browser until they are sent, cleared, or KEEP_HOURS old.
   const STORE = "iris-study-v1";
+  const KEEP_HOURS = 8;
+  const answers = {};
   try { Object.assign(answers, JSON.parse(localStorage.getItem(STORE) || "{}")); } catch (e) {}
-  if (!answers.response_id) {
-    answers.response_id = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2));
+  if (answers.saved_at && Date.now() - answers.saved_at > KEEP_HOURS * 3600000) {
+    Object.keys(answers).forEach((k) => delete answers[k]);
+    try { localStorage.removeItem(STORE); } catch (e) {}
   }
-  const save = () => { try { localStorage.setItem(STORE, JSON.stringify(answers)); } catch (e) {} };
+  // Consent is never carried over: on a shared computer the next person gives their own.
+  answers.consent = false;
+  const newId = () => (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2));
+  if (!answers.response_id) answers.response_id = newId();
+  const save = () => { answers.saved_at = Date.now(); try { localStorage.setItem(STORE, JSON.stringify(answers)); } catch (e) {} };
   document.querySelectorAll("[data-config]").forEach((el) => { el.textContent = CONFIG[el.dataset.config]; });
 
   // ---- Task screens ----
@@ -319,32 +434,71 @@
       <label class="q" for="${t.key}_note">What did you do, and what happened? If you were unsure or unable to continue, please describe where.</label>
       <textarea id="${t.key}_note" name="${t.key}_note"></textarea>
     </fieldset>`;
-  // The review task asks what the screen tells them, not for a sterilisation decision.
+  // The review task asks what the photo tells them, not for a sterilisation decision.
   const review = (t) => `
     <fieldset>
       <label class="q" for="${t.key}_result">Based on the information shown, what can you conclude about this set?</label>
       <textarea id="${t.key}_result" name="${t.key}_result"></textarea>
-    </fieldset>
-    <fieldset>
-      <label class="q" for="${t.key}_note">What, if anything, would you still need to check before moving it to the next stage?</label>
-      <textarea id="${t.key}_note" name="${t.key}_note"></textarea>
     </fieldset>`;
+  const PHOTO = `
+    <figure class="review-shot">
+      <picture>
+        <source media="(max-width: 560px)" srcset="review-photo-narrow.jpg" width="864" height="1075">
+        <img src="review-photo.jpg" width="1520" height="932" alt="Photo of the receiving tray from above after sorting, with five instruments. Each has a label with its name and slot: slot 1 No. 3 handle, slot 2 Artery forceps, slot 3 Surgical scissors, slot 4 Tissue forceps, slot 5 No. 3L handle.">
+      </picture>
+      <figcaption>IRIS's photo after sorting: 5 of 5 instruments placed.</figcaption>
+    </figure>`;
+  // A 0-10 number line.
+  const rate = (name, question, low, high) => `
+    <fieldset>
+      <legend>${question}</legend>
+      <div class="scale eleven" data-scale="${name}" data-from="0" data-to="10" data-low="${low}" data-high="${high}"></div>
+      <div class="scale-ends"><span>0: ${low}</span><span>10: ${high}</span></div>
+    </fieldset>`;
+  const ratings = (t) => rate(`${t.key}_ease`, "How easy or difficult was this task?", "Very difficult", "Very easy") +
+    (t.useful ? rate(`${t.key}_useful`, t.useful, "Not useful at all", "Very useful") : "");
+  // Task 2 also asks how often a tray does not match its set, and whether typing at the station suits them.
+  const FREQUENCY = ["Never", "About 1 in 100 operations or fewer", "About 1 in 50 operations", "About 1 in 10 operations", "More often than 1 in 10 operations", "Not sure"];
+  const mismatch = () => `
+    <fieldset>
+      <legend>In your work, how often does a tray have an instrument that is not part of its set, or is missing one?</legend>
+      <div class="choices">${FREQUENCY.map((v) => `<label class="choice"><input type="radio" name="t2_frequency" value="${v}"> ${v}</label>`).join("")}</div>
+    </fieldset>` + rate("t2_convenient", "How convenient would it be to type messages to IRIS at the sorting station?", "Very inconvenient", "Very convenient");
   TASKS.forEach((t, i) => {
     const s = tpl.content.firstElementChild.cloneNode(true);
     s.dataset.screen = t.key;
     s.dataset.name = `Task ${i + 1} of ${TASKS.length}`;
     s.dataset.task = String(i);
-    s.querySelector(".label").textContent = `Task ${i + 1} of ${TASKS.length}: ${t.title}`;
+    s.querySelector("h2").textContent = t.title;
     s.querySelector(".prompt").textContent = t.prompt;
-    s.querySelector(".followup").innerHTML = i === TASKS.length - 1 ? review(t) : completed(t);
+    s.querySelector(".followup").innerHTML = t.photo ? review(t) : completed(t) + ratings(t) + (t.key === "t2" ? mismatch() : "");
+    if (t.photo) s.querySelector("[data-open]").outerHTML = PHOTO;
     if (i < TASKS.length - 1) s.querySelector("[data-next]").textContent = `Next: task ${i + 2}`;
     box.append(s);
   });
+  document.querySelector("[data-screen='t3-reveal'] [data-photo]").outerHTML = PHOTO;
+  document.getElementById("reveal-questions").innerHTML =
+    rate("t3_spot", "How easy or difficult would it be to spot a wrongly labelled instrument in a photo like this?", "Very difficult", "Very easy") +
+    rate("t3_confidence", "As a check on IRIS's sorting, how much confidence would a labelled photo like this give you that a set was sorted correctly?", "No confidence", "Complete confidence");
+  // The questions about a task, and the way on, appear once the task has been tried (at once for the photo).
+  function syncTask(s) {
+    const t = TASKS[Number(s.dataset.task)];
+    const tried = Boolean(t.photo || answers[`${t.key}_opened`] || answers[`${t.key}_result`]);
+    s.querySelector(".followup").hidden = !tried;
+    s.querySelector("[data-next]").hidden = !tried;
+    const open = s.querySelector("[data-open]");
+    if (!open) return;
+    open.textContent = tried ? "Open the screen again" : "Open the screen";
+    open.classList.toggle("primary", !tried);
+    open.classList.toggle("quiet", tried);
+  }
 
-  // 7-point scales for the two rating items (UMUX-Lite).
+  // Rating scales: 1-7 for the two UMUX-Lite items unless the element says otherwise (the 0-10 lines).
   document.querySelectorAll("[data-scale]").forEach((el) => {
     const name = el.dataset.scale;
-    el.innerHTML = Array.from({ length: 7 }, (_, i) => `<label class="choice"><input type="radio" name="${name}" value="${i + 1}"><span>${i + 1}</span></label>`).join("");
+    const from = Number(el.dataset.from ?? 1), to = Number(el.dataset.to ?? 7);
+    const ends = { [from]: el.dataset.low ?? "strongly disagree", [to]: el.dataset.high ?? "strongly agree" };
+    el.innerHTML = Array.from({ length: to - from + 1 }, (_, i) => from + i).map((n) => `<label class="choice"><input type="radio" name="${name}" value="${n}"><span>${n}</span>${ends[n] ? `<span class="sr"> (${ends[n]})</span>` : ""}</label>`).join("");
   });
 
   // ---- Video ----
@@ -361,17 +515,19 @@
 
   // ---- Restore and record answers ----
   const fields = () => document.querySelectorAll("input[name], textarea[name]");
-  fields().forEach((el) => {
+  const fill = () => fields().forEach((el) => {
     const v = answers[el.name];
-    if (v === undefined) return;
-    if (el.type === "radio") el.checked = el.value === v;
+    if (el.type === "radio") el.checked = v !== undefined && el.value === v;
     else if (el.type === "checkbox") el.checked = Boolean(v);
-    else el.value = v;
+    else el.value = v ?? "";
   });
-  const otherBox = document.getElementById("position_other");
-  const stageBox = document.getElementById("stage_other");
+  const otherBox = document.getElementById("position_other_box");
+  const stageBox = document.getElementById("stage_other_box");
   const syncOther = () => { otherBox.hidden = answers.position !== "Other"; stageBox.hidden = answers.stage !== "Another stage"; };
+  const taskScreens = () => document.querySelectorAll("[data-task]");
+  fill();
   syncOther();
+  taskScreens().forEach(syncTask);
   document.addEventListener("input", (e) => {
     const el = e.target;
     if (!el.name) return;
@@ -383,38 +539,83 @@
 
   // ---- Screens ----
   const screens = [...document.querySelectorAll("[data-screen]")];
+  const idx = (name) => screens.findIndex((s) => s.dataset.screen === name);
+  const NOT_STEPS = ["welcome", "thanks", "stopped"];
+  const steps = screens.length - NOT_STEPS.length;
+  const main = document.getElementById("main");
   const progress = document.getElementById("progress");
+  const stop = document.getElementById("stop");
   let at = 0;
   function show(i) {
     screens[at].hidden = true;
     at = Math.max(0, Math.min(screens.length - 1, i));
     const s = screens[at];
     s.hidden = false;
-    const counted = screens.length - 2; // welcome and thanks are not steps
-    progress.hidden = at === 0 || s.dataset.screen === "thanks";
+    const step = !NOT_STEPS.includes(s.dataset.screen);
+    progress.hidden = stop.hidden = !step;
+    progress.classList.toggle("wide", s.classList.contains("wide"));
+    stop.classList.toggle("wide", s.classList.contains("wide"));
     document.getElementById("step-name").textContent = s.dataset.name;
-    document.getElementById("step-count").textContent = `Step ${at} of ${counted}`;
-    const pct = Math.round((at / counted) * 100);
+    document.getElementById("step-count").textContent = `Step ${at} of ${steps}`;
+    // The bar shows steps finished, so it is full only once the answers are sent.
+    const pct = Math.round(((at - 1) / steps) * 100);
+    const bar = document.getElementById("bar");
     document.getElementById("bar-fill").style.width = `${pct}%`;
-    document.getElementById("bar").setAttribute("aria-valuenow", String(pct));
+    bar.setAttribute("aria-valuenow", String(pct));
+    bar.setAttribute("aria-valuetext", `Step ${at} of ${steps}: ${s.dataset.name}`);
     if (s.dataset.screen !== "video") video.pause();
     window.scrollTo(0, 0);
-    (s.querySelector("h1, h2, .prompt") || s).setAttribute("tabindex", "-1");
-    (s.querySelector("h1, h2, .prompt") || s).focus({ preventScroll: true });
-    // After sending, nothing is kept, so the next person on this device starts fresh.
-    if (s.dataset.screen !== "thanks") { answers.last_screen = s.dataset.screen; save(); }
+    const head = s.querySelector("h1, h2") || s;
+    head.setAttribute("tabindex", "-1");
+    head.focus({ preventScroll: true });
+    // Only steps are remembered; after sending or clearing, nothing is kept.
+    if (step) { answers.last_screen = s.dataset.screen; save(); }
   }
 
-  // What must be answered before moving on.
+  // Unfinished answers in this browser: the welcome screen offers to continue or start again.
+  const resumeAt = answers.started_at ? idx(answers.last_screen) : -1;
+  let resuming = resumeAt > 0;
+  function syncResume() {
+    document.getElementById("resume").hidden = !resuming;
+    document.getElementById("start").textContent = resuming ? "Continue my answers" : "Start";
+  }
+  if (resuming && answers.saved_at) {
+    const min = Math.max(1, Math.round((Date.now() - answers.saved_at) / 60000));
+    const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+    document.getElementById("resume-age").textContent = `, saved ${min < 60 ? rtf.format(-min, "minute") : rtf.format(-Math.round(min / 60), "hour")}`;
+  }
+  syncResume();
+
+  function clearAll() {
+    try { localStorage.removeItem(STORE); } catch (e) {}
+    Object.keys(answers).forEach((k) => delete answers[k]);
+    answers.response_id = newId();
+    fill();
+    syncOther();
+    taskScreens().forEach(syncTask);
+    document.querySelectorAll("[data-error]").forEach((el) => { el.hidden = true; });
+    resuming = false;
+    syncResume();
+  }
+  document.getElementById("start-over").addEventListener("click", () => { clearAll(); document.getElementById("consent").focus(); });
+  document.getElementById("stop-clear").addEventListener("click", () => {
+    if (!confirm("Clear all your answers from this browser? Nothing has been sent yet.")) return;
+    clearAll();
+    show(idx("stopped"));
+  });
+  document.getElementById("restart").addEventListener("click", () => show(0));
+
+  // What must be answered before moving on. The "What did you do" boxes stay optional.
+  const taskDone = (...keys) => (keys.every((k) => answers[k]) ? "" : "Please answer each question about this task (the text box is optional).");
   const REQUIRED = {
     welcome: () => (answers.consent ? "" : "Please tick the box to agree before you start."),
     about: () => (!answers.position ? "Please choose your position." :
       answers.position === "Other" && !(answers.position_other || "").trim() ? "Please type your position." :
       !answers.years ? "Please say how long you have worked in this position." : ""),
-    t1: () => (answers.t1_result ? "" : "Please answer the question about this task."),
-    t2: () => (answers.t2_result ? "" : "Please answer the question about this task."),
-    t3: () => (answers.t3_result ? "" : "Please answer the question about this task."),
-    t4: () => ((answers.t4_result || "").trim() ? "" : "Please say what you can conclude about this set."),
+    t1: () => taskDone("t1_result", "t1_ease", "t1_useful"),
+    t2: () => taskDone("t2_result", "t2_ease", "t2_useful", "t2_frequency", "t2_convenient"),
+    t3: () => ((answers.t3_result || "").trim() ? "" : "Please say what you can conclude about this set."),
+    "t3-reveal": () => (answers.t3_spot && answers.t3_confidence ? "" : "Please answer both questions."),
     rating: () => (answers.umux_capabilities && answers.umux_easy ? "" : "Please answer both statements."),
     work: () => (!answers.stage ? "Please choose an answer about where it could fit." :
       answers.stage === "Another stage" && !(answers.stage_other || "").trim() ? "Please say which stage." : ""),
@@ -431,53 +632,78 @@
     const s = screens[at];
     if (b.hasAttribute("data-next")) {
       if (!check(s)) return;
-      if (s.dataset.screen === "welcome" && !answers.started_at) { answers.started_at = new Date().toISOString(); save(); }
+      if (s.dataset.screen === "welcome") {
+        if (resuming) { resuming = false; show(resumeAt); return; }
+        if (!answers.started_at) { answers.started_at = new Date().toISOString(); save(); }
+      }
       show(at + 1);
     } else if (b.hasAttribute("data-back")) show(at - 1);
-    else if (b.hasAttribute("data-open")) openTask(Number(s.dataset.task), b);
+    else if (b.hasAttribute("data-open")) openTask(Number(s.dataset.task));
     else if (b.hasAttribute("data-submit")) submit(b);
   });
 
   // ---- Task panel: the prototype, full screen, with the task above it ----
   const runner = document.getElementById("runner");
   const frameBox = document.getElementById("runner-frame");
-  let current = null, opener = null;
+  const runnerText = runner.querySelector(".runner-text");
+  const more = document.getElementById("runner-more");
+  let current = null;
   function load(t) {
     frameBox.innerHTML = "";
     const f = document.createElement("iframe");
     f.title = "Proposed IRIS operator screen";
     f.src = `prototype.html#${t.start}&clean`;
-    frameBox.style.height = "100%";
+    // The prototype has no use for Escape, so Escape inside it also returns to the questions.
+    f.addEventListener("load", () => {
+      try { f.contentWindow.addEventListener("keydown", (e) => { if (e.key === "Escape") closeTask(); }); } catch (e) {}
+    });
     frameBox.append(f);
   }
-  function openTask(i, button) {
-    current = TASKS[i]; opener = button;
+  function setMore(open) {
+    runnerText.classList.toggle("open", open);
+    more.setAttribute("aria-expanded", String(open));
+    more.textContent = open ? "Show less" : "Read full task";
+  }
+  function openTask(i) {
+    current = TASKS[i];
     document.getElementById("runner-label").textContent = `Task ${i + 1} of ${TASKS.length}: ${current.title}`;
     document.getElementById("runner-prompt").textContent = current.prompt;
+    setMore(false);
     load(current);
     runner.hidden = false;
+    main.inert = progress.inert = stop.inert = true;
     document.body.style.overflow = "hidden";
-    document.getElementById("runner-done").focus();
+    runner.focus();
   }
   function closeTask() {
     if (!current) return;
+    answers[`${current.key}_opened`] = true;
+    save();
     runner.hidden = true; frameBox.innerHTML = "";
+    main.inert = progress.inert = stop.inert = false;
     document.body.style.overflow = "";
-    const s = screens[at];
-    opener.textContent = "Open the screen again";
-    opener.classList.replace("primary", "quiet");
     current = null;
-    s.querySelector("legend")?.setAttribute("tabindex", "-1");
-    s.querySelector("legend")?.focus();
+    const s = screens[at];
+    syncTask(s);
+    // Focus the first question once it is shown (its group, so the question is read out).
+    const first = s.querySelector(".followup fieldset");
+    first.setAttribute("tabindex", "-1");
+    requestAnimationFrame(() => first.focus());
   }
+  more.addEventListener("click", () => setMore(!runnerText.classList.contains("open")));
   document.getElementById("runner-restart").addEventListener("click", () => current && load(current));
   document.getElementById("runner-done").addEventListener("click", closeTask);
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !runner.hidden) closeTask(); });
 
   // ---- Sending ----
+  // Keep in step with FIELDS in apps-script.gs.
   const FIELDS = ["response_id", "started_at", "minutes_taken", "position", "position_other", "years", "video_note",
-    "t1_result", "t1_note", "t2_result", "t2_note", "t3_result", "t3_note", "t4_result", "t4_note",
-    "umux_capabilities", "umux_easy", "stage", "influence", "other"];
+    "t1_result", "t1_note", "t1_ease", "t1_useful",
+    "t2_result", "t2_note", "t2_ease", "t2_useful", "t2_frequency", "t2_convenient",
+    "t3_result", "t3_spot", "t3_confidence",
+    "umux_capabilities", "umux_easy", "stage", "influence", "elsewhere", "other"];
+  const SEND_WAIT = 25000; // ms before an unanswered send counts as failed
+  const within = (ms) => (AbortSignal.timeout ? AbortSignal.timeout(ms) : undefined);
   async function submit(button) {
     const s = screens[at];
     if (!check(s)) return;
@@ -492,31 +718,34 @@
     FIELDS.forEach((k) => { payload[k] = answers[k] ?? ""; });
     if (payload.position !== "Other") payload.position_other = "";
     if (payload.stage === "Another stage") payload.stage = `Another stage: ${(answers.stage_other || "").trim()}`;
-    button.disabled = true; button.textContent = "Sending...";
+    button.disabled = true; button.textContent = "Sending…";
     err.hidden = true;
     const body = JSON.stringify(payload);
-    let sent = false;
+    let sent = false, confirmed = false;
     try {
       // A plain-text body keeps this a simple request; the sheet ignores a repeated response_id.
-      const res = await fetch(CONFIG.responseUrl, { method: "POST", body });
+      const res = await fetch(CONFIG.responseUrl, { method: "POST", body, signal: within(SEND_WAIT) });
       const out = await res.json().catch(() => null);
-      sent = out ? out.ok === true : res.ok;
+      sent = confirmed = out ? out.ok === true : res.ok;
     } catch (e) {
-      // The browser could not read the reply. Send once more without reading it; a duplicate is ignored.
-      try { await fetch(CONFIG.responseUrl, { method: "POST", mode: "no-cors", body }); sent = true; } catch (e2) { sent = false; }
+      // No reply in time counts as not sent. Otherwise the browser may only have been unable to
+      // read the reply: send once more without reading it. A duplicate is ignored, but arrival is unconfirmed.
+      if (e.name !== "TimeoutError") {
+        try { await fetch(CONFIG.responseUrl, { method: "POST", mode: "no-cors", body, signal: within(SEND_WAIT) }); sent = true; } catch (e2) { sent = false; }
+      }
     }
     if (!sent) {
       button.disabled = false; button.textContent = "Send my answers";
-      err.textContent = "Your answers could not be sent. Check your internet connection and press Send again. Your answers are kept on this page.";
+      err.textContent = `Your answers could not be sent. Check your internet connection and press Send again; your answers are kept on this page. If it keeps failing, please contact ${CONFIG.contact}.`;
       err.hidden = false; return;
     }
+    document.getElementById("thanks-code").textContent = answers.response_id.slice(0, 8);
+    document.getElementById("thanks-check").hidden = confirmed;
     try { localStorage.removeItem(STORE); } catch (e) {}
-    show(screens.length - 1);
+    show(idx("thanks"));
   }
 
-  // Resume where the participant left off after a reload.
-  const resume = screens.findIndex((s) => s.dataset.screen === answers.last_screen);
-  show(resume > 0 && answers.last_screen !== "thanks" ? resume : 0);
+  show(0);
 })();
 </script>
 </body>

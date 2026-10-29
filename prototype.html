@@ -308,7 +308,7 @@
       <!-- The chat is for describing the tray while it is being checked; it is gone before the first check and from Start sorting on. -->
       <section class="sect chat" data-when="moving detecting missing ordering ready" aria-labelledby="chat-title">
         <h2 id="chat-title">Tell IRIS about this tray</h2>
-        <p class="hint">For example: “2 tissue forceps instead of 1” or “a sinskey hook was also used”. IRIS's answers are advice; they do not change what the robot sorts.</p>
+        <p class="hint">Tell IRIS if the tray does not match the list. After IRIS answers, the list shows what will be sorted.</p>
         <div class="log" data-bind="log" role="log" aria-live="polite" tabindex="0" aria-label="Conversation with IRIS"></div>
         <form class="send" data-action="send">
           <label class="sr" for="msg">Message to IRIS</label>
@@ -349,13 +349,25 @@
   // on, each point checked by eye on the full-size photo. `compact` is used
   // instead when the review area is too narrow for all the cards in one band.
   const SET = [
-    { slot: 1, name: "Scalpel handle small", mark: ["bottom", 202, 270] },
+    { slot: 1, name: "No. 3 handle", mark: ["bottom", 202, 270] },
     { slot: 2, name: "Tissue forceps", mark: ["bottom", 298, 272], compact: ["top", 309, 92] },
     { slot: 3, name: "Surgical scissors", mark: ["bottom", 405, 268] },
     { slot: 4, name: "Artery forceps", mark: ["bottom", 530, 330], compact: ["top", 533, 40] },
-    { slot: 5, name: "Scalpel handle large", mark: ["bottom", 655, 335] },
+    { slot: 5, name: "No. 3L handle", mark: ["bottom", 655, 335] },
   ];
   const LATE = SET.length - 1; // The instrument the first check does not find.
+  // Study task 2 ("&extra" in the address): the set is the first four, and the
+  // large handle is an extra instrument on the tray. The chat adds it to the
+  // set ("sort it") or keeps it out ("do not sort it"); kept out, the result
+  // shows a photo of the tray without it (PHOTO_WITHOUT_LARGE).
+  const EXTRA = location.hash.slice(1).split("&").includes("extra");
+  // Study task 4 ("&mislabel"): the result photo's cards for slots 2 and 4 carry
+  // each other's names on purpose, to see whether people notice and what they do.
+  const MISLABEL = location.hash.slice(1).split("&").includes("mislabel");
+  const cardName = (i) => (MISLABEL ? { 1: SET[3].name, 3: SET[1].name }[i] ?? SET[i].name : SET[i].name);
+  // SortedWithout3L.jpg from design-demos: Sorted.jpg's tray without the large
+  // handle, same size and framing, so the other marks stay where they are.
+  const PHOTO_WITHOUT_LARGE = "data:image/jpeg;base64,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";
   // The contact heads' pick order (set indexes): large handle, small handle,
   // scissors, tissue forceps, artery forceps.
   const ORDER = [4, 0, 2, 1, 3];
@@ -375,20 +387,26 @@
   };
   const svg = (name, size = 18) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[name]}</svg>`;
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
-  const lower = (i) => SET[i].name.toLowerCase();
+  // Names mid-sentence: "tissue forceps", but catalogue names like "No. 3L handle" keep their capitals.
+  const plain = (name) => (/^No\. /.test(name) ? name : name.toLowerCase());
+  const lower = (i) => plain(SET[i].name);
   const SUMMARY_MISSING = `I checked the tray. ${LATE} of the ${SET.length} instruments are there. The ${lower(LATE)} is missing.`;
-  const SUMMARY_ALL = `I checked the tray. All ${SET.length} instruments are there.`;
+  const summaryAll = () => `I checked the tray. All ${setIds().length} instruments are there.`;
   const CHECK_PHASES = ["idle", "moving", "detecting", "missing", "ordering", "ready"];
   const state = {
-    phase: "idle", found: 0, lateMissing: true, excluded: false,
+    phase: "idle", found: 0, lateMissing: !EXTRA, excluded: false, extraSorted: false, asked: false,
     placed: 0, step: 0, pausing: false, failNext: false, log: [],
   };
   const bind = (name) => app.querySelector(`[data-bind="${name}"]`);
   const $ = (sel) => app.querySelector(sel);
   let refocus = null;
 
+  // The set's instruments (in task 2, the extra one only once the chat has added it).
+  const setIds = () => SET.map((_, i) => i).filter((i) => !(EXTRA && i === LATE && !state.extraSorted));
+  const withoutExtra = () => EXTRA && !state.extraSorted;
+  const PHOTO_ALL = app.querySelector(".shot img").src;
   // The run: the found instruments in the pick order (the large handle only once it has been found).
-  const runIds = () => ORDER.filter((i) => !(state.lateMissing && i === LATE));
+  const runIds = () => ORDER.filter((i) => setIds().includes(i) && !(state.lateMissing && i === LATE));
   const counts = () => ({ placed: state.placed, total: runIds().length });
 
   // ---- Mock timing: nothing here talks to the robot. ----
@@ -401,16 +419,16 @@
   // tray, then each instrument turns Found. The first check of a tray misses
   // the large handle; a second check finds all five.
   function check({ again = false } = {}) {
-    if (!again) { state.lateMissing = true; state.excluded = false; state.log = []; }
+    if (!again) { Object.assign(state, { lateMissing: !EXTRA, excluded: false, extraSorted: false, asked: false, log: [] }); }
     else state.lateMissing = false;
     state.phase = "moving"; state.found = 0; render();
     later(1400, () => { state.phase = "detecting"; render(); later(DETECT_MS, detect); });
   }
   function detect() {
-    const target = state.lateMissing ? LATE : SET.length;
+    const target = state.lateMissing ? LATE : setIds().length;
     if (state.found < target) { state.found += 1; render(); later(DETECT_MS, detect); return; }
     later(900, () => {
-      state.log.push({ from: "iris", text: state.lateMissing ? SUMMARY_MISSING : SUMMARY_ALL });
+      state.log.push({ from: "iris", text: state.lateMissing ? SUMMARY_MISSING : summaryAll() });
       if (state.lateMissing) { state.phase = "missing"; render(); return; }
       // The contact heads work out their order; Start sorting waits for it.
       state.phase = "ordering"; render();
@@ -455,9 +473,9 @@
   // follow the pick order with their numbers; the rest come after, unnumbered.
   const numbered = () => state.phase === "missing" || state.phase === "ready";
   function checkRows() {
-    const rows = SET.map((it, i) => ({ i, status: checkStatus(i) }));
+    const rows = setIds().map((i) => ({ i, status: checkStatus(i) }));
     if (!numbered()) return rows;
-    const found = ORDER.filter((i) => rows[i].status[0] === "found").map((i, n) => ({ ...rows[i], pick: n + 1 }));
+    const found = ORDER.filter((i) => rows[i]?.status[0] === "found").map((i, n) => ({ ...rows[i], pick: n + 1 }));
     return [...found, ...rows.filter((row) => row.status[0] !== "found")];
   }
   function checkRowsHTML(rows) {
@@ -472,8 +490,8 @@
           `<div class="ask" role="group" aria-labelledby="q-title"><span class="lamp y" aria-hidden="true"></span>` +
           `<h3 id="q-title">${it.name} was not found</h3>` +
           `<p>Check the tray. If it is there, move it apart from the others and look again.</p>` +
-          `<div class="keys"><button type="button" class="k" data-action="look">Look again</button>` +
-          `<button type="button" class="k ink" data-action="without">Sort without it</button></div></div></li>`;
+          `<div class="keys"><button type="button" class="k ink" data-action="look">Look again</button>` +
+          `<button type="button" class="k" data-action="without">Sort without it</button></div></div></li>`;
       }
       return `<li>${head}${st}</li>`;
     }).join("");
@@ -573,7 +591,7 @@
       const counted = rows.length;
       const foundCount = rows.filter((row) => row.status[0] === "found").length;
       bind("checkKicker").textContent = phase === "moving" || phase === "detecting" ? "Tray check in progress" : "Tray check";
-      bind("checkTitle").textContent = phase === "idle" ? `${SET.length} instruments in this set` :
+      bind("checkTitle").textContent = phase === "idle" ? `${setIds().length} instruments in this set` :
         phase === "moving" ? "Moving above the tray..." :
         phase === "detecting" ? `Checking the tray: ${foundCount} of ${counted} found` : `${foundCount} of ${counted} instruments found`;
       bind("segs").innerHTML = rows.map((row) => (row.status[0] === "found" ? "<i></i>" : row.status[0] === "missing" ? '<i class="gap"></i>' : '<i class="wait"></i>')).join("");
@@ -606,8 +624,8 @@
         Array.from({ length: total - 1 }, (_, i) => `<b style="left:${((i + 1) / total) * 100}%"></b>`).join("");
       const cur = SET[runIds()[placed]];
       bind("now").innerHTML = phase === "paused" ?
-        `${svg("pause")}<span>Paused before ${cur.name.toLowerCase()} (slot ${cur.slot}). Nothing moves until you resume.</span>` :
-        `${svg("arrow")}<span>Now: ${cur.name.toLowerCase()} (slot ${cur.slot}) · ${state.pausing ? "Pausing after this one" : stepText(state.step, cur.slot)}</span>`;
+        `${svg("pause")}<span>Paused before ${plain(cur.name)} (slot ${cur.slot}). Nothing moves until you resume.</span>` :
+        `${svg("arrow")}<span>Now: ${plain(cur.name)} (slot ${cur.slot}) · ${state.pausing ? "Pausing after this one" : stepText(state.step, cur.slot)}</span>`;
       bind("progressRows").innerHTML = progressRowsHTML();
     }
 
@@ -637,16 +655,19 @@
     }
 
     if (phase === "result") {
+      // Task 2 with the extra instrument left out: the same tray photographed without the large handle.
+      const photo = $(".shot img"), src = withoutExtra() ? PHOTO_WITHOUT_LARGE : PHOTO_ALL;
+      if (photo.src !== src) photo.src = src;
       bind("tally").innerHTML = `<li>${placed} of ${total} instruments placed</li>` +
         (state.excluded ? `<li class="excluded"><span class="lamp y" aria-hidden="true"></span><span>1 instrument excluded: ${SET[LATE].name}, slot ${SET[LATE].slot}</span></li>` : "") +
         `<li><span class="dot" aria-hidden="true"></span>Overhead capture ready</li>`;
-      // A card for each placed instrument, left to right; "Scalpel handle" stays on one line unless its card had to narrow.
+      // A card for each placed instrument, left to right; "No. 3" stays on one line unless its card had to narrow.
       const shown = SET.map((it, i) => ({ it, i })).filter(({ i }) => runIds().includes(i));
       const key = shown.map(({ i }) => i).join(",");
       const names = bind("names");
       if (names.dataset.key !== key) {
         names.dataset.key = key;
-        names.innerHTML = shown.map(({ it }) => `<li data-mark="${it.mark.join(" ")}"${it.compact ? ` data-compact="${it.compact.join(" ")}"` : ""}>${esc(it.name).replace(/^(\S+ \S+) (\S+)$/, '<span class="keep">$1</span> $2')}<small>Slot ${it.slot}</small></li>`).join("");
+        names.innerHTML = shown.map(({ it, i }) => `<li data-mark="${it.mark.join(" ")}"${it.compact ? ` data-compact="${it.compact.join(" ")}"` : ""}>${esc(cardName(i)).replace(/^(\S+ \S+) (\S+)$/, '<span class="keep">$1</span> $2')}<small>Slot ${it.slot}</small></li>`).join("");
       }
       relayout();
     }
@@ -662,7 +683,7 @@
     bind("sendNote").hidden = !checking;
     bind("failNext").checked = state.failNext;
     app.querySelectorAll("[data-demo]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.demo === phase || (b.dataset.demo === "detecting" && phase === "moving"))));
-    history.replaceState(null, "", `#${phase}${app.classList.contains("clean") ? "&clean" : ""}`);
+    history.replaceState(null, "", `#${phase}${app.classList.contains("clean") ? "&clean" : ""}${EXTRA ? "&extra" : ""}${MISLABEL ? "&mislabel" : ""}`);
     // A stage change that hides or replaces the focused key moves focus to the status panel.
     if (!refocus && (!document.activeElement || document.activeElement === document.body || document.activeElement.closest("[hidden]"))) refocus = null;
     if (refocus) { const el = $(refocus); refocus = null; (el && !el.disabled ? el : $(".stage")).focus(); }
@@ -672,10 +693,11 @@
   function jump(phase, found = 0) {
     clearTimer();
     Object.assign(state, { phase, found, pausing: false, step: 0, excluded: false });
-    state.lateMissing = phase === "missing" || (phase === "detecting" && found < SET.length);
+    state.lateMissing = !EXTRA && (phase === "missing" || (phase === "detecting" && found < SET.length));
     state.log = phase === "idle" || phase === "detecting" ? [] :
+      EXTRA ? [{ from: "iris", text: summaryAll() }] :
       phase === "missing" ? [{ from: "iris", text: SUMMARY_MISSING }] :
-      [{ from: "iris", text: SUMMARY_MISSING }, { from: "iris", text: SUMMARY_ALL }];
+      [{ from: "iris", text: SUMMARY_MISSING }, { from: "iris", text: summaryAll() }];
     if (phase === "sorting" || phase === "paused" || phase === "stopped") { state.placed = 2; state.step = 6; }
     else if (["done", "positioning", "capturing", "failed", "result"].includes(phase)) state.placed = runIds().length;
     else state.placed = 0;
@@ -723,8 +745,54 @@
     state.log.push({ from: "nurse", text });
     input.value = "";
     render();
-    setTimeout(() => { state.log.push({ from: "iris", text: "Thank you. I sort only the instruments in this set and leave anything else on the tray, so please remove the extra instrument by hand. Your message does not change what I sort." }); render(); }, 700);
+    setTimeout(() => {
+      // The chat closes at Start sorting; a reply that arrives later changes nothing.
+      if (state.phase !== "ready" && state.phase !== "ordering" && state.phase !== "missing") return;
+      state.log.push({ from: "iris", text: reply(text) }); render();
+    }, 700);
   });
+
+  // Mock chat: keyword matching, not a language model. In task 2 it reads whether
+  // the message asks to sort the extra instrument or to leave it on the tray.
+  const NEG = "(?:don'?t|do not|dont|not|never|no need to|shouldn'?t|should not)";
+  const SORT_WORD = "(?:sort(?:ed|ing)?|include[ds]?|including|add|pick|place[ds]?|put|move[ds]?|process(?:ed)?)";
+  const LEAVE_WORD = "(?:leave|leaving|left|skip|exclude[ds]?|ignore[ds]?|remove[ds]?|discard|aside|take (?:it |this |that )?out|by hand|manually|myself)";
+  const word = (w) => new RegExp(`\\b${w}\\b`);
+  // A negation counts for a word up to two words later, within one clause.
+  const negated = (w) => new RegExp(`\\b${NEG}\\b(?:\\s+[\\w']+){0,2}?\\s+${w}\\b`);
+  function intent(message) {
+    const t = message.toLowerCase().replace(/[‘’]/g, "'");
+    if (negated(SORT_WORD).test(t) || (word(LEAVE_WORD).test(t) && !negated(LEAVE_WORD).test(t))) return "leave";
+    if (word(SORT_WORD).test(t) || negated(LEAVE_WORD).test(t)) return "sort";
+    if (state.asked && /^\W*(yes|yeah|yep|ok|okay|sure|please)\b/.test(t)) return "sort";
+    if (state.asked && /^\W*no\b/.test(t)) return "leave";
+    if (/\b(extra|additional|another|added|more|scalpel|handle|3l|not (?:in|on|part of) (?:the|this) (?:set|list))\b/.test(t)) return "ask";
+    return "other";
+  }
+  function reply(message) {
+    if (!EXTRA) {
+      return state.phase === "missing" ?
+        `Check the tray. If the ${lower(LATE)} is there, move it apart from the others and press Look again. If it is not, press Sort without it.` :
+        "Thank you. The list shows what I will sort.";
+    }
+    const extra = SET[LATE];
+    const kind = intent(message);
+    state.asked = kind === "ask";
+    if (kind === "sort") {
+      if (state.extraSorted) return `The ${lower(LATE)} is already in the list, for slot ${extra.slot}. I will sort it with the others.`;
+      // Adding an instrument changes the pick order, so Start sorting waits for it again.
+      state.extraSorted = true; state.phase = "ordering";
+      later(1800, () => { state.phase = "ready"; render(); });
+      return `OK, I will sort the extra instrument. It is a ${lower(LATE)}. I added it to the list for slot ${extra.slot}. Check the list before you press Start sorting.`;
+    }
+    if (kind === "leave") {
+      if (!state.extraSorted) return `OK, I will not sort the extra instrument. I will sort only the ${setIds().length} instruments in the list and leave it on the input tray. Please remove it by hand.`;
+      state.extraSorted = false;
+      return `OK, I will not sort the ${lower(LATE)}. I removed it from the list and will leave it on the input tray. Please remove it by hand.`;
+    }
+    if (kind === "ask") return `I can see it. It is a ${lower(LATE)}, which is not in this set. Should I sort it into slot ${extra.slot} with the others, or leave it on the input tray?`;
+    return "I am not sure what you would like me to do. If the tray does not match the list, tell me what is different, for example whether to sort an extra instrument or leave it on the tray.";
+  }
 
   // Result photo: each name is a card in a band under the photo (the narrowest
   // layout moves some to a band over it), placed along the band where its line
