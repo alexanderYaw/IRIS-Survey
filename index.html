@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>IRIS Sorting Study</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* One screen at a time, a progress bar on top; tasks open the prototype
+     full screen with the task kept in a bar above it. */
+  :root {
+    --bg: #f5f7f5;
+    --surface: #ffffff;
+    --ink: #16201c;
+    --ink-2: #4b5752;
+    --line: #d6ddd9;
+    --accent: #1e6a56;
+    --accent-ink: #ffffff;
+    --accent-soft: #e1eee8;
+    --warn: #8a3b12;
+    --display: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --body: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #101614; --surface: #19211e; --ink: #e7ede9; --ink-2: #a8b4af; --line: #2c3833;
+      --accent: #63c3a3; --accent-ink: #0b1411; --accent-soft: #1b2f28; --warn: #ffb48a; color-scheme: dark;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg); color: var(--ink); font: 400 18px/1.55 var(--body);
+    padding: env(safe-area-inset-top, 0px) max(16px, env(safe-area-inset-right, 0px)) 48px max(16px, env(safe-area-inset-left, 0px));
+  }
+  h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; }
+  p { margin: 0; }
+  [hidden] { display: none !important; }
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  .shell { max-width: 760px; margin: 0 auto; }
+  .shell.wide { max-width: 1240px; }
+
+  /* Progress */
+  .progress { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding: 14px 0 12px; display: grid; gap: 8px; }
+  .progress-row { display: flex; justify-content: space-between; gap: 12px; font-size: 15px; color: var(--ink-2); }
+  .progress-row b { font-family: var(--display); color: var(--accent); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; font-size: 13px; }
+  .bar { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--accent); transition: width 0.25s ease; }
+
+  /* Screens */
+  .screen { display: grid; gap: 20px; padding-top: 16px; }
+  .screen h1 { font-size: clamp(28px, 5vw, 40px); line-height: 1.1; font-weight: 700; }
+  .screen h2 { font-size: 26px; font-weight: 600; line-height: 1.2; }
+  .lede { font-size: 19px; color: var(--ink-2); max-width: 62ch; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; display: grid; gap: 12px; }
+  .card ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+  .note { font-size: 15px; color: var(--ink-2); }
+
+  /* Questions */
+  fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 10px; min-width: 0; }
+  legend, .q { font: 600 19px/1.35 var(--display); padding: 0; margin-bottom: 4px; }
+  .q-hint { font-size: 15px; color: var(--ink-2); margin-top: -6px; }
+  .choices { display: grid; gap: 8px; }
+  .choices.row { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); }
+  .choice { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 10px 14px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); cursor: pointer; }
+  .choice:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+  .choice input { width: 20px; height: 20px; accent-color: var(--accent); flex: none; margin: 0; }
+  .scale { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
+  .scale .choice { flex-direction: column; justify-content: center; gap: 4px; min-height: 64px; padding: 8px 4px; font: 600 17px/1 var(--display); }
+  .scale-ends { display: flex; justify-content: space-between; font-size: 14px; color: var(--ink-2); }
+  textarea, input[type="text"] { width: 100%; font: inherit; color: var(--ink); background: var(--surface); border: 1.5px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+  textarea { min-height: 88px; resize: vertical; }
+  .error { color: var(--warn); font-weight: 700; font-size: 16px; }
+
+  /* Buttons */
+  .nav { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; padding-top: 8px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; padding: 0 22px; border-radius: 10px; border: 0; font: 600 17px/1 var(--display); cursor: pointer; text-decoration: none; touch-action: manipulation; }
+  .btn.primary { background: var(--accent); color: var(--accent-ink); }
+  .btn.quiet { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--line); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn.big { min-height: 60px; font-size: 19px; }
+
+  /* Video */
+  video { width: 100%; max-width: 100%; display: block; aspect-ratio: 2464 / 666; border-radius: 10px; background: var(--line); }
+  .video-labels { display: grid; grid-template-columns: 1280fr 1184fr; gap: 12px; font-size: 15px; color: var(--ink-2); }
+  .video-labels b { color: var(--ink); font-family: var(--display); font-weight: 600; }
+
+  /* Task */
+  .task-card { background: var(--accent-soft); border-radius: 12px; padding: 18px 20px; display: grid; gap: 14px; }
+  .task-card .label { font: 600 13px/1 var(--display); letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); }
+  .task-card .prompt { font-size: 21px; font-weight: 700; line-height: 1.35; }
+  .task-card .after { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+  .done-tag { color: var(--accent); font-weight: 700; }
+
+  .runner { position: fixed; inset: 0; z-index: 20; display: grid; grid-template-rows: auto minmax(0, 1fr); background: #e4e1da; }
+  .runner-bar {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; background: var(--surface); border-bottom: 1px solid var(--line);
+    padding: calc(10px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 10px max(16px, env(safe-area-inset-left, 0px));
+  }
+  .runner-text { flex: 1 1 340px; min-width: 0; }
+  .runner-text b { display: block; font: 600 13px/1.2 var(--display); letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); }
+  .runner-text p { font-size: 17px; font-weight: 700; line-height: 1.35; }
+  .runner-keys { display: flex; flex-wrap: wrap; gap: 8px; }
+  .runner iframe { width: 100%; height: 100%; border: 0; display: block; }
+
+  @media (max-width: 560px) {
+    .scale { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+    .scale .choice { min-height: 56px; font-size: 15px; }
+    .video-labels { grid-template-columns: 1fr; gap: 2px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<div class="progress shell" id="progress" hidden>
+  <div class="progress-row"><b id="step-name">About you</b><span id="step-count">Step 1 of 9</span></div>
+  <div class="bar" role="progressbar" aria-labelledby="step-name" aria-valuemin="0" aria-valuemax="100" id="bar"><i id="bar-fill" style="width:0%"></i></div>
+</div>
+
+<main id="main">
+  <!-- 0: welcome and consent -->
+  <section class="screen shell" data-screen="welcome" data-name="Welcome">
+    <h1>IRIS sorting study</h1>
+    <p class="lede">IRIS is a robot arm that sorts used surgical instruments from a tray into their positions in the set tray, so staff only need to check the result. We would like your opinion on how it works and on its screen.</p>
+    <div class="card">
+      <ul>
+        <li>Takes <b>under 10 minutes</b>: a short video, four quick tasks on a clickable screen, and a few questions.</li>
+        <li><b>Anonymous.</b> We ask for your position, not your name. We record your answers and how long the survey took, nothing else.</li>
+        <li>The clickable screen is <b>not connected to a robot</b>. Nothing you press moves anything.</li>
+        <li>We built IRIS, so problems you find are the most useful answers.</li>
+        <li>Taking part is voluntary, and you can stop at any time. Questions: <span data-config="contact"></span>.</li>
+      </ul>
+    </div>
+    <label class="choice" for="consent"><input type="checkbox" id="consent" name="consent"> I have read this and agree to take part.</label>
+    <p class="error" data-error hidden></p>
+    <div class="nav"><span></span><button class="btn primary big" type="button" data-next>Start</button></div>
+  </section>
+
+  <!-- 1: about you -->
+  <section class="screen shell" data-screen="about" data-name="About you" hidden>
+    <h2>About you</h2>
+    <fieldset>
+      <legend>Your position in the hospital</legend>
+      <div class="choices">
+        <label class="choice"><input type="radio" name="position" value="CSSD technician"> Sterile processing (CSSD) technician</label>
+        <label class="choice"><input type="radio" name="position" value="CSSD supervisor or manager"> CSSD supervisor or manager</label>
+        <label class="choice"><input type="radio" name="position" value="Nurse"> Nurse</label>
+        <label class="choice"><input type="radio" name="position" value="Other"> Other</label>
+      </div>
+      <label class="sr" for="position_other">Your position</label>
+      <input type="text" id="position_other" name="position_other" placeholder="Your position" hidden autocomplete="off">
+    </fieldset>
+    <fieldset>
+      <legend>How long have you worked in this position?</legend>
+      <div class="choices row">
+        <label class="choice"><input type="radio" name="years" value="Under 1 year"> Under 1 year</label>
+        <label class="choice"><input type="radio" name="years" value="1-5 years"> 1–5 years</label>
+        <label class="choice"><input type="radio" name="years" value="6-10 years"> 6–10 years</label>
+        <label class="choice"><input type="radio" name="years" value="Over 10 years"> Over 10 years</label>
+      </div>
+    </fieldset>
+    <p class="error" data-error hidden></p>
+    <div class="nav"><button class="btn quiet" type="button" data-back>Back</button><button class="btn primary" type="button" data-next>Next</button></div>
+  </section>
+
+  <!-- 2: video -->
+  <section class="screen shell wide" data-screen="video" data-name="How IRIS works" hidden>
+    <h2>Watch IRIS sort a tray</h2>
+    <p class="lede">On the left, the operator's screen. On the right, the robot arm. Both are shown at 1.5× speed and were recorded during separate runs, so they do not match step by step.</p>
+    <video id="video" controls playsinline preload="metadata" poster="side-by-side-poster.jpg" width="2464" height="666">
+      <source src="side-by-side.mp4" type="video/mp4">
+    </video>
+    <div class="video-labels"><span><b>The operator's screen</b></span><span><b>The robot arm</b> (it finishes first and then holds still)</span></div>
+    <fieldset class="shell" style="width:100%">
+      <label class="q" for="video_note">What stood out to you? <span class="note">(optional)</span></label>
+      <textarea id="video_note" name="video_note"></textarea>
+    </fieldset>
+    <div class="nav"><button class="btn quiet" type="button" data-back>Back</button><button class="btn primary" type="button" data-next>Next</button></div>
+  </section>
+
+  <!-- 3: tasks intro -->
+  <section class="screen shell" data-screen="tasks-intro" data-name="Tasks" hidden>
+    <h2>Four quick tasks</h2>
+    <p class="lede">Next you will use a proposed new design of the operator's screen. Each task opens it at a different moment. Do what you would do at work, then press <b>Done</b>.</p>
+    <div class="card">
+      <p>There is no right way to do these, and you cannot break anything. If something is unclear, that is useful for us to know.</p>
+      <p class="note">The screen works best on a computer or tablet. On a phone, turn it sideways.</p>
+    </div>
+    <div class="nav"><button class="btn quiet" type="button" data-back>Back</button><button class="btn primary" type="button" data-next>Start task 1</button></div>
+  </section>
+
+  <!-- 4-7: tasks (filled from TASKS) -->
+  <template id="task-template">
+    <section class="screen shell" data-screen="" data-name="" hidden>
+      <div class="task-card">
+        <span class="label"></span>
+        <p class="prompt"></p>
+        <div class="after">
+          <button class="btn primary big" type="button" data-open>Open the screen</button>
+          <span class="done-tag" hidden>Done</span>
+        </div>
+      </div>
+      <div class="followup"></div>
+      <p class="error" data-error hidden></p>
+      <div class="nav"><button class="btn quiet" type="button" data-back>Back</button><button class="btn primary" type="button" data-next>Next</button></div>
+    </section>
+  </template>
+  <div id="task-screens"></div>
+
+  <!-- 8: rating -->
+  <section class="screen shell" data-screen="rating" data-name="The screen" hidden>
+    <h2>The screen you just used</h2>
+    <fieldset>
+      <legend>This screen's capabilities meet my requirements.</legend>
+      <div class="scale" data-scale="umux_capabilities"></div>
+      <div class="scale-ends"><span>Strongly disagree</span><span>Strongly agree</span></div>
+    </fieldset>
+    <fieldset>
+      <legend>This screen is easy to use.</legend>
+      <div class="scale" data-scale="umux_easy"></div>
+      <div class="scale-ends"><span>Strongly disagree</span><span>Strongly agree</span></div>
+    </fieldset>
+    <p class="error" data-error hidden></p>
+    <div class="nav"><button class="btn quiet" type="button" data-back>Back</button><button class="btn primary" type="button" data-next>Next</button></div>
+  </section>
+
+  <!-- 9: your work -->
+  <section class="screen shell" data-screen="work" data-name="Your work" hidden>
+    <h2>IRIS in your work</h2>
+    <fieldset>
+      <legend>At which stage would IRIS sorting help you most?</legend>
+      <div class="choices">
+        <label class="choice"><input type="radio" name="stage" value="Before washing"> Before washing, when trays arrive</label>
+        <label class="choice"><input type="radio" name="stage" value="After washing"> After washing, at inspection and assembly</label>
+        <label class="choice"><input type="radio" name="stage" value="Neither"> Neither</label>
+        <label class="choice"><input type="radio" name="stage" value="Not sure"> Not sure</label>
+      </div>
+    </fieldset>
+    <fieldset>
+      <label class="q" for="influence">What would affect whether IRIS could be used where you work?</label>
+      <p class="q-hint">For example: safety, time, space, trust, training.</p>
+      <textarea id="influence" name="influence"></textarea>
+    </fieldset>
+    <fieldset>
+      <label class="q" for="other">Anything else you want to tell us? <span class="note">(optional)</span></label>
+      <textarea id="other" name="other"></textarea>
+    </fieldset>
+    <p class="error" data-error hidden></p>
+    <div class="nav"><button class="btn quiet" type="button" data-back>Back</button><button class="btn primary big" type="button" data-submit>Send my answers</button></div>
+  </section>
+
+  <!-- 10: thanks -->
+  <section class="screen shell" data-screen="thanks" data-name="Done" hidden>
+    <h1 tabindex="-1" id="thanks-title">Thank you</h1>
+    <p class="lede">Your answers have been sent. You can close this page.</p>
+  </section>
+</main>
+
+<div class="runner" id="runner" role="dialog" aria-modal="true" aria-labelledby="runner-label" hidden>
+  <div class="runner-bar">
+    <div class="runner-text"><b id="runner-label">Task</b><p id="runner-prompt"></p></div>
+    <div class="runner-keys">
+      <button class="btn quiet" type="button" id="runner-restart">Start the task again</button>
+      <button class="btn primary" type="button" id="runner-done">Done</button>
+    </div>
+  </div>
+  <div id="runner-frame"></div>
+</div>
+
+<script>
+(() => {
+  // ---- Settings for the study team ----
+  const CONFIG = {
+    // The Google Apps Script web app URL (see README.md). Until it is set, answers cannot be sent.
+    responseUrl: "",
+    contact: "[contact name and email]",
+  };
+
+  // The four tasks. `start` opens the prototype at that screen; `clean` hides its mockup controls.
+  const TASKS = [
+    { key: "t1", start: "idle", prompt: "This tray has just arrived at sterile processing. Get it ready to be sorted, and deal with anything the screen asks you. Press Done when you think it is ready." },
+    { key: "t2", start: "ready", prompt: "Before sorting, you notice an extra instrument on the tray that is not part of this set. Tell IRIS about it." },
+    { key: "t3", start: "sorting", prompt: "While the arm is moving, you see that it is about to hit something. Show what you would do." },
+    { key: "t4", start: "result", prompt: "Sorting has finished. Decide whether this set is ready to go to sterilisation." },
+  ];
+
+  const answers = {};
+  const STORE = "iris-study-v1";
+  try { Object.assign(answers, JSON.parse(localStorage.getItem(STORE) || "{}")); } catch (e) {}
+  if (!answers.response_id) {
+    answers.response_id = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2));
+  }
+  const save = () => { try { localStorage.setItem(STORE, JSON.stringify(answers)); } catch (e) {} };
+  document.querySelectorAll("[data-config]").forEach((el) => { el.textContent = CONFIG[el.dataset.config]; });
+
+  // ---- Task screens ----
+  const tpl = document.getElementById("task-template");
+  const box = document.getElementById("task-screens");
+  const expected = (t) => `
+    <fieldset>
+      <legend>Did the screen do what you expected?</legend>
+      <div class="choices row">
+        <label class="choice"><input type="radio" name="${t.key}_result" value="Yes"> Yes</label>
+        <label class="choice"><input type="radio" name="${t.key}_result" value="Partly"> Partly</label>
+        <label class="choice"><input type="radio" name="${t.key}_result" value="No"> No</label>
+      </div>
+      <label class="sr" for="${t.key}_note">What did you expect, or what was unclear?</label>
+      <textarea id="${t.key}_note" name="${t.key}_note" placeholder="What did you expect, or what was unclear? (optional)"></textarea>
+    </fieldset>`;
+  const finalCheck = (t) => `
+    <fieldset>
+      <legend>Is this set ready to go to sterilisation?</legend>
+      <div class="choices row">
+        <label class="choice"><input type="radio" name="${t.key}_result" value="Yes"> Yes</label>
+        <label class="choice"><input type="radio" name="${t.key}_result" value="No"> No</label>
+        <label class="choice"><input type="radio" name="${t.key}_result" value="Cannot tell"> Cannot tell</label>
+      </div>
+      <label class="q" for="${t.key}_note">What did you check, or what else would you check?</label>
+      <textarea id="${t.key}_note" name="${t.key}_note"></textarea>
+    </fieldset>`;
+  TASKS.forEach((t, i) => {
+    const s = tpl.content.firstElementChild.cloneNode(true);
+    s.dataset.screen = t.key;
+    s.dataset.name = `Task ${i + 1} of ${TASKS.length}`;
+    s.dataset.task = String(i);
+    s.querySelector(".label").textContent = `Task ${i + 1} of ${TASKS.length}`;
+    s.querySelector(".prompt").textContent = t.prompt;
+    s.querySelector(".followup").innerHTML = i === TASKS.length - 1 ? finalCheck(t) : expected(t);
+    if (i < TASKS.length - 1) s.querySelector("[data-next]").textContent = `Next: task ${i + 2}`;
+    box.append(s);
+  });
+
+  // 7-point scales for the two rating items (UMUX-Lite).
+  document.querySelectorAll("[data-scale]").forEach((el) => {
+    const name = el.dataset.scale;
+    el.innerHTML = Array.from({ length: 7 }, (_, i) => `<label class="choice"><input type="radio" name="${name}" value="${i + 1}"><span>${i + 1}</span></label>`).join("");
+  });
+
+  // ---- Restore and record answers ----
+  const fields = () => document.querySelectorAll("input[name], textarea[name]");
+  fields().forEach((el) => {
+    const v = answers[el.name];
+    if (v === undefined) return;
+    if (el.type === "radio") el.checked = el.value === v;
+    else if (el.type === "checkbox") el.checked = Boolean(v);
+    else el.value = v;
+  });
+  const otherBox = document.getElementById("position_other");
+  const syncOther = () => { otherBox.hidden = answers.position !== "Other"; };
+  syncOther();
+  document.addEventListener("input", (e) => {
+    const el = e.target;
+    if (!el.name) return;
+    answers[el.name] = el.type === "checkbox" ? el.checked : el.value;
+    if (el.name === "position") syncOther();
+    save();
+  });
+  document.addEventListener("change", (e) => { if (e.target.type === "radio" || e.target.type === "checkbox") e.target.dispatchEvent(new Event("input", { bubbles: true })); });
+
+  // ---- Screens ----
+  const screens = [...document.querySelectorAll("[data-screen]")];
+  const progress = document.getElementById("progress");
+  let at = 0;
+  function show(i) {
+    screens[at].hidden = true;
+    at = Math.max(0, Math.min(screens.length - 1, i));
+    const s = screens[at];
+    s.hidden = false;
+    const counted = screens.length - 2; // welcome and thanks are not steps
+    progress.hidden = at === 0 || s.dataset.screen === "thanks";
+    document.getElementById("step-name").textContent = s.dataset.name;
+    document.getElementById("step-count").textContent = `Step ${at} of ${counted}`;
+    const pct = Math.round((at / counted) * 100);
+    document.getElementById("bar-fill").style.width = `${pct}%`;
+    document.getElementById("bar").setAttribute("aria-valuenow", String(pct));
+    if (s.dataset.screen !== "video") document.getElementById("video").pause();
+    window.scrollTo(0, 0);
+    (s.querySelector("h1, h2, .prompt") || s).setAttribute("tabindex", "-1");
+    (s.querySelector("h1, h2, .prompt") || s).focus({ preventScroll: true });
+    // After sending, nothing is kept, so the next person on this device starts fresh.
+    if (s.dataset.screen !== "thanks") { answers.last_screen = s.dataset.screen; save(); }
+  }
+
+  // What must be answered before moving on.
+  const REQUIRED = {
+    welcome: () => (answers.consent ? "" : "Please tick the box to agree before you start."),
+    about: () => (!answers.position ? "Please choose your position." :
+      answers.position === "Other" && !(answers.position_other || "").trim() ? "Please type your position." :
+      !answers.years ? "Please say how long you have worked in this position." : ""),
+    t1: () => (answers.t1_result ? "" : "Please answer the question about this task."),
+    t2: () => (answers.t2_result ? "" : "Please answer the question about this task."),
+    t3: () => (answers.t3_result ? "" : "Please answer the question about this task."),
+    t4: () => (answers.t4_result ? "" : "Please say whether the set is ready."),
+    rating: () => (answers.umux_capabilities && answers.umux_easy ? "" : "Please answer both statements."),
+    work: () => (answers.stage ? "" : "Please choose a stage."),
+  };
+  function check(s) {
+    const msg = REQUIRED[s.dataset.screen]?.() || "";
+    const err = s.querySelector("[data-error]");
+    if (err) { err.textContent = msg; err.hidden = !msg; }
+    return !msg;
+  }
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest("button");
+    if (!b) return;
+    const s = screens[at];
+    if (b.hasAttribute("data-next")) {
+      if (!check(s)) return;
+      if (s.dataset.screen === "welcome" && !answers.started_at) { answers.started_at = new Date().toISOString(); save(); }
+      show(at + 1);
+    } else if (b.hasAttribute("data-back")) show(at - 1);
+    else if (b.hasAttribute("data-open")) openTask(Number(s.dataset.task), b);
+    else if (b.hasAttribute("data-submit")) submit(b);
+  });
+
+  // ---- Task panel: the prototype, full screen, with the task above it ----
+  const runner = document.getElementById("runner");
+  const frameBox = document.getElementById("runner-frame");
+  let current = null, opener = null;
+  function load(t) {
+    frameBox.innerHTML = "";
+    const f = document.createElement("iframe");
+    f.title = "Proposed IRIS operator screen";
+    f.src = `prototype.html#${t.start}&clean`;
+    frameBox.style.height = "100%";
+    frameBox.append(f);
+  }
+  function openTask(i, button) {
+    current = TASKS[i]; opener = button;
+    document.getElementById("runner-label").textContent = `Task ${i + 1} of ${TASKS.length}`;
+    document.getElementById("runner-prompt").textContent = current.prompt;
+    load(current);
+    runner.hidden = false;
+    document.body.style.overflow = "hidden";
+    document.getElementById("runner-done").focus();
+  }
+  function closeTask() {
+    if (!current) return;
+    runner.hidden = true; frameBox.innerHTML = "";
+    document.body.style.overflow = "";
+    const s = screens[at];
+    s.querySelector(".done-tag").hidden = false;
+    opener.textContent = "Open the screen again";
+    opener.classList.replace("primary", "quiet");
+    current = null;
+    s.querySelector("legend")?.setAttribute("tabindex", "-1");
+    s.querySelector("legend")?.focus();
+  }
+  document.getElementById("runner-restart").addEventListener("click", () => current && load(current));
+  document.getElementById("runner-done").addEventListener("click", closeTask);
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !runner.hidden) closeTask(); });
+
+  // ---- Sending ----
+  const FIELDS = ["response_id", "started_at", "minutes_taken", "position", "position_other", "years", "video_note",
+    "t1_result", "t1_note", "t2_result", "t2_note", "t3_result", "t3_note", "t4_result", "t4_note",
+    "umux_capabilities", "umux_easy", "stage", "influence", "other"];
+  async function submit(button) {
+    const s = screens[at];
+    if (!check(s)) return;
+    const err = s.querySelector("[data-error]");
+    if (!CONFIG.responseUrl) {
+      err.textContent = "Your answers cannot be sent yet: the study team has not connected the answer sheet. Please tell " + CONFIG.contact + ".";
+      err.hidden = false; return;
+    }
+    const started = Date.parse(answers.started_at || "");
+    answers.minutes_taken = Number.isFinite(started) ? ((Date.now() - started) / 60000).toFixed(1) : "";
+    const payload = {};
+    FIELDS.forEach((k) => { payload[k] = answers[k] ?? ""; });
+    if (payload.position !== "Other") payload.position_other = "";
+    button.disabled = true; button.textContent = "Sending...";
+    err.hidden = true;
+    const body = JSON.stringify(payload);
+    let sent = false;
+    try {
+      // A plain-text body keeps this a simple request; the sheet ignores a repeated response_id.
+      const res = await fetch(CONFIG.responseUrl, { method: "POST", body });
+      const out = await res.json().catch(() => null);
+      sent = out ? out.ok === true : res.ok;
+    } catch (e) {
+      // The browser could not read the reply. Send once more without reading it; a duplicate is ignored.
+      try { await fetch(CONFIG.responseUrl, { method: "POST", mode: "no-cors", body }); sent = true; } catch (e2) { sent = false; }
+    }
+    if (!sent) {
+      button.disabled = false; button.textContent = "Send my answers";
+      err.textContent = "Your answers could not be sent. Check your internet connection and press Send again. Your answers are kept on this page.";
+      err.hidden = false; return;
+    }
+    try { localStorage.removeItem(STORE); } catch (e) {}
+    show(screens.length - 1);
+  }
+
+  // Resume where the participant left off after a reload.
+  const resume = screens.findIndex((s) => s.dataset.screen === answers.last_screen);
+  show(resume > 0 && answers.last_screen !== "thanks" ? resume : 0);
+})();
+</script>
+</body>
+</html>
