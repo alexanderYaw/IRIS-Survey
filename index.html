@@ -286,7 +286,7 @@
       <figure class="clip">
         <!-- Follows the operator's screen; it has no controls of its own and no sound. -->
         <video id="arm" muted playsinline preload="metadata" width="1280" height="720" aria-label="The robot arm, synced to the operator's screen">
-          <source src="videos/RobotArmSorting.MOV" type="video/mp4">
+          <source src="videos/RobotArmSorting.mp4" type="video/mp4">
         </video>
         <figcaption>The robot arm</figcaption>
       </figure>
@@ -594,10 +594,10 @@
   // ---- Video ----
   // Two real-speed recordings. The operator's screen leads; the arm waits on its 5 s frame
   // until the screen reaches 23 s, then the two run together (arm time = screen time - 18 s).
-  // Both play at 1.5×, except the screen's first and last 5 seconds, which play at normal speed.
+  // Both play at 2.5×, except the screen's first and last 5 seconds, which play at normal speed.
   const video = document.getElementById("video");
   const arm = document.getElementById("arm");
-  const SYNC_AT = 23, ARM_FROM = 5, EDGE = 5, FAST = 1.5;
+  const SYNC_AT = 23, ARM_FROM = 5, EDGE = 5, FAST = 2.5;
   const armTime = (t) => Math.min(Math.max(t - (SYNC_AT - ARM_FROM), ARM_FROM), arm.duration || Infinity);
   const follow = (jump) => {
     const t = video.currentTime, end = video.duration;
@@ -605,7 +605,7 @@
     if (video.playbackRate !== rate) video.playbackRate = rate;
     if (arm.playbackRate !== rate) arm.playbackRate = rate;
     const want = armTime(t);
-    if (jump || Math.abs(arm.currentTime - want) > 0.3) arm.currentTime = want;
+    if (jump || Math.abs(arm.currentTime - want) > 0.5) arm.currentTime = want;
     const together = !video.paused && !video.ended && t >= SYNC_AT && want < (arm.duration || Infinity);
     if (together && arm.paused) arm.play().catch(() => {});
     if (!together && !arm.paused) arm.pause();

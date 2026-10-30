@@ -14,7 +14,7 @@ Google Sheet; the page does not ask for a name or email address.
 | --- | --- |
 | `index.html` | The survey page |
 | `prototype.html` | The clickable operator screen (`design-demos/dir-2.html` from the IRIS repo, with a study version of the chat; see "Task 2" below) |
-| `videos/DashboardDemoCut.mp4`, `videos/RobotArmSorting.MOV` | The two videos, shown side by side: the operator's screen and the robot arm, both recorded at real speed. The page keeps them in sync (the arm waits on its 5 s frame until the screen reaches 23 s, then arm time = screen time − 18 s) and plays both at 1.5×, except the screen's first and last 5 seconds. The arm is muted. |
+| `videos/DashboardDemoCut.mp4`, `videos/RobotArmSorting.mp4` | The two videos, shown side by side: the operator's screen and the robot arm, both recorded at real speed. The page keeps them in sync (the arm waits on its 5 s frame until the screen reaches 23 s, then arm time = screen time − 18 s) and plays both at 2.5×, except the screen's first and last 5 seconds. The arm is muted. |
 | `side-by-side.mp4`, `side-by-side-poster.jpg` | The previous combined video; no longer used by the page |
 | `review-photo.jpg`, `review-photo-narrow.jpg` | Task 3's labelled result photo (wide, and the phone layout), rendered from `prototype.html#result&mislabel&clean` |
 | `apps-script.gs` | Receives answers and writes them to the sheet |
