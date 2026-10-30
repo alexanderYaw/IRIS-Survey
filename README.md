@@ -1,6 +1,6 @@
 # IRIS sorting study
 
-A one-page survey for sterile processing (CSSD) staff, about 12 minutes:
+A one-page survey for sterile processing (CSSD) staff, about 10 minutes:
 a welcome page that explains where IRIS would fit, the operator's part in it,
 what is current and what is proposed, and what is collected; consent; position
 and the instrument-processing activities they carry out; a side-by-side video
@@ -105,7 +105,9 @@ The chat answers by matching keywords; it is not a language model.
 
 Pressing Start sorting without using the chat sorts the four and shows the
 photo without the large handle. A message that mixes instructions in an unusual way can get the
-wrong answer, so read the `t2_note` answers with that in mind.
+wrong answer, so read the `t2_note` answers with that in mind. The task ends
+when the result photo appears (`&endresult`): the photo gets a green border and
+"Return to questions" starts to hop.
 
 In the other tasks the chat gives a short fixed reply (in task 1, while the
 missing-instrument question is open, it points to Look again and Sort without it).
@@ -116,9 +118,9 @@ Task 3 shows a picture of the result screen instead of opening the prototype:
 `review-photo.jpg` (`review-photo-narrow.jpg` on screens 560 px wide or less).
 The photo is correct, but the name cards for slots 2 and 4 are swapped on
 purpose: the tissue forceps are labelled "Artery forceps, Slot 2" and the artery
-forceps "Tissue forceps, Slot 4". The task calls the picture an example of the
-proposed result photo (the prototype marks it as a mockup photo) and does not
-mention the error. `t3_review` shows whether the participant noticed it; `t3_assess` and `t3_confidence` are their own judgement, before they
+forceps "Tissue forceps, Slot 4". The task says sorting has finished for another
+tray with the same set as task 2, this time including the No. 3L handle, and
+calls the picture one possible outcome; it does not mention the error. `t3_review` shows whether the participant noticed it; `t3_assess` and `t3_confidence` are their own judgement, before they
 know.
 
 The screen ratings (UMUX-Lite) come next, so the error does not affect them
@@ -155,10 +157,9 @@ What the less obvious columns hold:
 | `years` | Less than 1 year / 1 to less than 6 years / 6 to 10 years / More than 10 years |
 | `t1_result`, `t2_result` | "Were you able to complete this task?": Yes / Partly / No / Could not open or use the screen (a technical problem) |
 | `t2_note` | "What did you do, and what happened? Please describe anything that was unclear." (task 2 only) |
-| `t1_ease`, `t2_ease` | "How easy or difficult was this task?" 0 (very difficult) to 10 (very easy) |
+| `t1_ease`, `t2_ease` | "Overall, how easy or difficult was it to complete this task?" 0 (very difficult) to 10 (very easy) |
 | `t1_useful` | "How useful would the tray check be in your work?" 0 (not useful at all) to 10 (very useful), or "Cannot judge, or not applicable to my work" |
 | `t2_useful` | "How useful, if at all, would the chat be for telling IRIS how to handle an instrument outside the standard set?" Not at all useful / Slightly useful / Moderately useful / Very useful / Extremely useful / I did not use the chat / Cannot judge / Not applicable to my work |
-| `t1_without` | "What would you expect to happen after selecting “Sort without it”? Please describe what IRIS would do and what you would need to do yourself." (text) |
 | `t1_disruption` | For a tray where IRIS sorts all but one instrument and leaves it on the input tray: "How much, if at all, would identifying and manually placing the remaining instrument disrupt your usual workflow?" Not at all / Slightly / Moderately / Very much / Extremely / Cannot judge / Not applicable to my work |
 | `t1_disruption_note` | "Please explain your answer. What, if anything, would make this manual step easier?" (optional text) |
 | `t2_frequency` | "In your usual work, approximately how often does a tray contain at least one unexpected instrument or have an expected instrument missing?": Never / Less than 1 in 100 trays / About 1–4 in 100 trays / About 5–9 in 100 trays / About 10 or more in 100 trays / I do not handle or check these trays / Not sure |

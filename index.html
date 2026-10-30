@@ -153,8 +153,8 @@
     padding: calc(10px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 10px max(16px, env(safe-area-inset-left, 0px));
   }
   .runner-text { flex: 1 1 340px; min-width: 0; }
-  .runner-text b { display: block; font: 600 13px/1.2 var(--display); letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); }
-  .runner-text p { font-size: 17px; font-weight: 700; line-height: 1.35; }
+  .runner-text b { display: block; font: 600 15px/1.2 var(--display); letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); }
+  .runner-text p { margin-top: 2px; font-size: 20px; font-weight: 700; line-height: 1.35; }
   .runner-keys { display: flex; flex-wrap: wrap; gap: 8px; }
   .runner-body { position: relative; min-height: 0; }
   #runner-frame { height: 100%; }
@@ -172,7 +172,7 @@
   /* A phone held sideways is short: the task shrinks to one line. */
   @media (max-height: 500px) {
     .runner-bar { padding-top: calc(6px + env(safe-area-inset-top, 0px)); padding-bottom: 6px; gap: 6px 12px; }
-    .runner-text p { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; font-size: 15px; }
+    .runner-text p { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; font-size: 17px; }
     .runner-text.open p { display: block; }
     .runner .btn { min-height: 44px; padding: 0 14px; font-size: 15px; }
     #runner-more { display: inline-flex; }
@@ -206,17 +206,17 @@
     </div>
     <section class="card">
       <h2 id="role-title">The proposed workflow, and your part in it</h2>
-      <p class="sub">The person at the sorting station is the operator. In this study, that is you.</p>
+      <p class="sub">In this study, you take the role of the operator: the person who works at the sorting station alongside IRIS.</p>
       <ol class="phases" aria-labelledby="role-title">
         <li class="phase"><h3>Before sorting</h3><ol class="steps"><li><span class="who you">You<span class="sr">:</span></span><span>Place the tray of instruments at the sorting station, next to an empty receiving tray.</span></li><li><span class="who iris">IRIS<span class="sr">:</span></span><span>Checks the tray with its camera against a list of instruments from one of multiple fixed sets, and shows what it found.</span></li><li><span class="who you">You<span class="sr">:</span></span><span>Decide what to do if the tray does not match the set, then start sorting.</span></li></ol></li>
         <li class="phase"><h3>While IRIS sorts</h3><ol class="steps"><li><span class="who iris">IRIS<span class="sr">:</span></span><span>Moves each instrument into its position in the receiving tray.</span></li><li><span class="who you">You<span class="sr">:</span></span><span>Stay at the station, within reach of the STOP button, until sorting ends. Alerts appear only on the screen.</span></li></ol></li>
         <li class="phase"><h3>After sorting</h3><ol class="steps"><li><span class="who iris">IRIS<span class="sr">:</span></span><span>Takes a photo of the receiving tray and labels each instrument in it.</span></li><li><span class="who you">You<span class="sr">:</span></span><span>Check the result before the set moves to the next stage.</span></li></ol></li>
       </ol>
-      <p class="note">IRIS does not inspect instruments for damage or cleanliness.</p>
+      <p class="note">Note: IRIS only sorts instruments. It does not check them for damage or cleanliness.</p>
     </section>
     <div class="card">
       <ul>
-        <li><b>About 12 minutes:</b> a short video, two tasks on a clickable screen, a photo to review, and a few questions.</li>
+        <li><b>This questionnaire takes about 10 minutes.</b> You will watch a short video, try two tasks on a clickable screen, review a photo, and answer a few questions.</li>
         <li>We do not collect your name or email address. All responses are anonymous.</li>
         <li>Positive and negative feedback are equally welcome. Participation is voluntary, and you may stop at any time before submitting your answers.</li>
         <li>Taking part is voluntary; you can stop at any time. Please contact Alexander Yaw at <a href="mailto:e1384328@u.nus.edu">e1384328@u.nus.edu</a> if you have any queries.</li>
@@ -445,12 +445,12 @@
   const TASKS = [
     { key: "t1", start: "idle", title: "Prepare for sorting", endsOnStart: true, prompt: "You have placed a tray in the sorting area. Use the screen to prepare it for sorting. The task is complete when you start the sorting.",
       useful: "How useful would the tray check be in your work?", usefulNa: "Cannot judge, or not applicable to my work" },
-    { key: "t2", start: "ready&extra", title: "Extra instrument",
+    { key: "t2", start: "ready&extra", title: "Extra instrument", endsOnResult: true,
       intro: "This task introduces IRIS's intelligent agent. You can talk to it in your own words to change what IRIS sorts, as you work.",
       prompt: "Before sorting begins, you notice a No. 3L handle on the incoming tray. It was used during the operation but is not included in the standard instrument set. Show what you would do next.",
       useful: "How useful, if at all, would the chat be for telling IRIS how to handle an instrument outside the standard set?",
       usefulOptions: ["Not at all useful", "Slightly useful", "Moderately useful", "Very useful", "Extremely useful", "I did not use the chat", "Cannot judge", "Not applicable to my work"] },
-    { key: "t3", photo: true, title: "Review the result", prompt: "This is a different tray from task 2. Its set has five instruments, including a No. 3L handle. Sorting has finished. This example shows how the proposed result photo and instrument labels would appear. Review it as you would before the set moves to the next stage, then answer the questions below it." },
+    { key: "t3", photo: true, title: "Review the result", prompt: "Sorting has finished for another tray with the same set of instruments as task 2, this time including the No. 3L handle. Here is one possible outcome. Review it as you would before the set moves to the next stage, then answer the questions below it." },
   ];
 
   // Answers are kept in this browser until they are sent, cleared, or KEEP_HOURS old.
@@ -523,7 +523,7 @@
       <legend>${question}</legend>
       <div class="choices">${options.map((v) => `<label class="choice"><input type="radio" name="${name}" value="${v}"> ${v}</label>`).join("")}</div>
     </fieldset>`;
-  const ratings = (t) => rate(`${t.key}_ease`, "How easy or difficult was this task?", "Very difficult", "Very easy") +
+  const ratings = (t) => rate(`${t.key}_ease`, "Overall, how easy or difficult was it to complete this task?", "Very difficult", "Very easy") +
     (!t.useful ? "" : t.usefulOptions ? pick(`${t.key}_useful`, t.useful, t.usefulOptions) : rate(`${t.key}_useful`, t.useful, "Not useful at all", "Very useful", t.usefulNa));
   // Task 2 also asks how often a tray does not match its set (an extra or a missing
   // instrument, the cases in tasks 2 and 1), and whether typing at the station suits them.
@@ -540,13 +540,9 @@
       <label class="q" for="t2_typing_note">What, if anything, would make typing instructions difficult? <span class="note">(optional)</span></label>
       <textarea id="t2_typing_note" name="t2_typing_note"></textarea>
     </fieldset>`;
-  // Task 1 then asks about "Sort without it", and about a tray where one instrument is left for the operator.
+  // Task 1 then asks about a tray where one instrument is left for the operator.
   const DISRUPTION = ["Not at all", "Slightly", "Moderately", "Very much", "Extremely", "Cannot judge", "Not applicable to my work"];
   const leftover = () => `
-    <fieldset>
-      <label class="q" for="t1_without">What would you expect to happen after selecting “Sort without it”? Please describe what IRIS would do and what you would need to do yourself.</label>
-      <textarea id="t1_without" name="t1_without"></textarea>
-    </fieldset>
     <div class="scenario">
       <p>For the next questions, consider this situation:</p>
       <p class="notice">IRIS recognises all but one instrument on a tray. You choose to continue sorting. IRIS sorts the recognised instruments and leaves the remaining instrument on the input tray for you to identify and place manually.</p>
@@ -729,7 +725,7 @@
       !ticked("activities").length ? "Please choose the activities you carry out, or “None of these”." :
       ticked("activities").includes("Other") && !(answers.activities_other || "").trim() ? "Please type your other activities." :
       !answers.years ? "Please say how long you have worked in this position." : ""),
-    t1: () => (["t1_result", "t1_ease", "t1_useful", "t1_disruption"].every((k) => answers[k]) && (answers.t1_without || "").trim() ? "" :
+    t1: () => (["t1_result", "t1_ease", "t1_useful", "t1_disruption"].every((k) => answers[k]) ? "" :
       "Please answer each question about this task (only the last text box is optional)."),
     t2: () => taskDone("t2_result", "t2_ease", "t2_useful", "t2_frequency", "t2_practical"),
     t3: () => ((answers.t3_review || "").trim() && answers.t3_assess && answers.t3_confidence ? "" : "Please answer each question about the photo."),
@@ -774,7 +770,7 @@
     frameBox.innerHTML = "";
     const f = document.createElement("iframe");
     f.title = "Proposed IRIS operator screen";
-    f.src = `prototype.html#${t.start}${t.endsOnStart ? "&endstart" : ""}&clean`;
+    f.src = `prototype.html#${t.start}${t.endsOnStart ? "&endstart" : ""}${t.endsOnResult ? "&endresult" : ""}&clean`;
     // The prototype has no use for Escape, so Escape inside it also returns to the questions.
     f.addEventListener("load", () => {
       try { f.contentWindow.addEventListener("keydown", (e) => { if (e.key === "Escape") closeTask(); }); } catch (e) {}
@@ -815,11 +811,17 @@
   more.addEventListener("click", () => setMore(!runnerText.classList.contains("open")));
   document.getElementById("runner-restart").addEventListener("click", () => current && load(current));
   document.getElementById("runner-done").addEventListener("click", closeTask);
-  // A task with `endsOnStart` ends when the prototype reports Start sorting: the prototype celebrates and freezes,
-  // and the bar says the task is complete; the participant returns with "Return to questions".
+  // A task with `endsOnStart` ends when the prototype reports Start sorting (the prototype celebrates and freezes),
+  // and one with `endsOnResult` when sorting has finished and the result photo is up (the prototype rings the photo in green).
+  // The bar says the task is complete; the participant returns with "Return to questions".
+  const ENDINGS = {
+    "start-sorting": ["endsOnStart", "Task complete: you started sorting."],
+    "sorting-finished": ["endsOnResult", "Task complete: sorting has finished."],
+  };
   window.addEventListener("message", (e) => {
-    if (e.origin !== location.origin || e.data?.iris !== "start-sorting" || !current?.endsOnStart) return;
-    runnerPrompt.textContent = "Task complete: you started sorting. Press Return to questions to continue, or Start the task again to try it once more.";
+    const ending = e.origin === location.origin && ENDINGS[e.data?.iris];
+    if (!ending || !current?.[ending[0]]) return;
+    runnerPrompt.textContent = `${ending[1]} Press Return to questions to continue, or Start the task again to try it once more.`;
     runnerDone.focus();
     // Let the celebration in the prototype finish (about a second) before the button starts to hop.
     nudgeTimer = setTimeout(() => runnerDone.classList.add("nudge"), 1200);
@@ -829,7 +831,7 @@
   // ---- Sending ----
   // Keep in step with FIELDS in apps-script.gs.
   const FIELDS = ["response_id", "started_at", "minutes_taken", "position", "position_other", "activities", "activities_other", "years",
-    "t1_result", "t1_ease", "t1_useful", "t1_without", "t1_disruption", "t1_disruption_note",
+    "t1_result", "t1_ease", "t1_useful", "t1_disruption", "t1_disruption_note",
     "t2_result", "t2_note", "t2_ease", "t2_useful", "t2_frequency", "t2_practical", "t2_typing_note",
     "t3_review", "t3_assess", "t3_confidence", "t3_physical",
     "umux_capabilities", "umux_easy", "t3_improve", "stage", "influence", "other"];

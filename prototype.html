@@ -56,7 +56,6 @@
   .plate { display: flex; align-items: baseline; gap: 14px; }
   .plate .mark { font-weight: 700; font-size: 18px; letter-spacing: 0.12em; }
   .plate .tray-name { margin: 0; font-size: 26px; font-weight: 600; }
-  .plate .label { align-self: center; }
   .lamp-status { display: flex; align-items: center; gap: 12px; font-size: 19px; font-weight: 500; }
   .lamp { width: 16px; height: 16px; border-radius: 50%; background: #b9b4a9; box-shadow: inset 0 -2px 0 rgba(0,0,0,0.18), 0 0 0 3px #d2cec5; flex: none; }
   .lamp.y { background: var(--yellow); }
@@ -162,6 +161,9 @@
   /* The photo takes the height left after the bands and the caption. */
   .shot { margin: 0 auto; width: min(100%, calc((100cqh - var(--bands, 110px) - 34px) * 843 / 408)); }
   .annot { position: relative; padding: var(--band-top, 0px) 0 var(--band-bottom, 110px); border-radius: 12px; overflow: hidden; background: #10201c; }
+  /* Study task 2 ends here: a green ring settles onto the photo. */
+  .annot.arrived::after { content: ""; position: absolute; inset: 0; border: 5px solid var(--lamp-green); border-radius: 12px; pointer-events: none; animation: arrive 0.7s cubic-bezier(0.2, 0.7, 0.3, 1) both; }
+  @keyframes arrive { from { opacity: 0; box-shadow: inset 0 0 0 14px rgba(67, 166, 79, 0.45); } to { opacity: 1; box-shadow: inset 0 0 0 0 rgba(67, 166, 79, 0); } }
   .annot .frame { position: relative; aspect-ratio: 843 / 408; background: #1d4a40; }
   .annot img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
   .annot svg.leaders { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
@@ -248,7 +250,7 @@
 <a class="skip" href="#main">Skip to the tray</a>
 <div class="app" id="app" data-phase="idle">
   <header>
-    <div class="plate"><span class="mark" translate="no">IRIS</span><span class="label">Tray</span><h1 class="tray-name">Tray 1</h1></div>
+    <div class="plate"><span class="mark" translate="no">IRIS</span><h1 class="tray-name">Tray 1</h1></div>
     <div class="lamp-status" role="status" aria-live="polite"><span class="lamp" data-bind="lamp" aria-hidden="true"></span><span data-bind="status">Ready to check the tray</span></div>
     <button type="button" class="stop" data-action="stop">STOP</button>
   </header>
@@ -390,6 +392,8 @@
   const EXTRA = location.hash.slice(1).split("&").includes("extra");
   // Study task 1 ("&endstart"): pressing Start sorting ends the task. The button celebrates and the screen freezes.
   const END_AT_START = location.hash.slice(1).split("&").includes("endstart");
+  // Study task 2 ("&endresult"): the result photo ends the task. The photo is ringed in green.
+  const END_AT_RESULT = location.hash.slice(1).split("&").includes("endresult");
   // Study task 4 ("&mislabel"): the result photo's cards for slots 2 and 4 carry
   // each other's names on purpose, to see whether people notice and what they do.
   const MISLABEL = location.hash.slice(1).split("&").includes("mislabel");
@@ -485,6 +489,11 @@
       state.phase = state.failNext ? "failed" : "result";
       state.failNext = false;
       render();
+      if (state.phase === "result" && END_AT_RESULT) {
+        $(".annot").classList.add("arrived");
+        // Study page: tell the survey that sorting has finished, which ends task 2.
+        if (window.parent !== window) window.parent.postMessage({ iris: "sorting-finished" }, location.origin);
+      }
     });
   }
 
