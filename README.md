@@ -1,11 +1,13 @@
 # IRIS sorting study
 
 A one-page survey for sterile processing (CSSD) staff, about 12 minutes:
-a welcome page that explains where IRIS would fit and the operator's part in
-it, consent, position, a side-by-side video of IRIS, two tasks on the
-clickable prototype (each followed by questions and 0-10 ratings), a third task
-that reviews a labelled result photo, two rating statements (UMUX-Lite) and
-four questions about their work. Answers go to a
+a welcome page that explains where IRIS would fit, the operator's part in it,
+what is current and what is proposed, and what is collected; consent; position
+and the instrument-processing activities they carry out; a side-by-side video
+of IRIS; two tasks on the clickable prototype (each followed by questions and
+0-10 ratings); a third task that reviews an example labelled result photo; two
+rating statements (UMUX-Lite); a screen that reveals the deliberate label error
+in task 3; and three questions about their work. Answers go to a
 Google Sheet; the page does not ask for a name or email address.
 
 | File | What it is |
@@ -30,13 +32,14 @@ Google Sheet; the page does not ask for a name or email address.
    (it ends in `/exec`).
 5. Open that URL in a browser. It should say "IRIS study answer sheet is running."
 
-A "Responses v3" tab with column headers appears with the first answer. A
+A "Responses v4" tab with column headers appears with the first answer. A
 response sent twice (for example after a poor connection) is stored once.
 
 If you change `apps-script.gs` later, use **Deploy > Manage deployments >
 Edit > New version**, so the URL stays the same. When the columns change (as
-in version 2, which added the per-task ratings), the script writes to a new
-tab with its own header; delete the old tab once it holds only test rows.
+in version 4, which moved task 3's questions and added the activities), the
+script writes to a new tab with its own header; delete the old tab once it holds
+only test rows.
 
 ## 2. Settings in the page
 
@@ -112,12 +115,16 @@ Task 3 shows a picture of the result screen instead of opening the prototype:
 `review-photo.jpg` (`review-photo-narrow.jpg` on screens 560 px wide or less).
 The photo is correct, but the name cards for slots 2 and 4 are swapped on
 purpose: the tissue forceps are labelled "Artery forceps, Slot 2" and the artery
-forceps "Tissue forceps, Slot 4". The task does not mention this. `t3_result`
-("what can you conclude about this set?") shows whether the participant noticed.
+forceps "Tissue forceps, Slot 4". The task calls the picture an example of the
+proposed result photo (the prototype marks it as a mockup photo) and does not
+mention the error. `t3_review` shows whether the participant noticed it; `t3_assess` and `t3_confidence` are their own judgement, before they
+know.
 
-The next screen then says the two labels were wrong on purpose and asks the two
-ratings `t3_spot` and `t3_confidence`. It has no Back button, so the answer in
-`t3_result` stays as it was given before the error was shown.
+The screen ratings (UMUX-Lite) come next, so the error does not affect them
+either. Only then does a screen say that the two labels were wrong on purpose,
+with one optional question, `t3_improve`. That screen has no Back button, so the
+task 3 answers and the ratings stay as they were given before the error was
+shown.
 
 To render the pictures again after changing the prototype, screenshot
 `prototype.html#result&mislabel&clean` at 1440 x 900 (device scale 2) and
@@ -126,7 +133,7 @@ To render the pictures again after changing the prototype, screenshot
 ## What is stored
 
 One row per participant: when it arrived, a generated response ID, the survey
-start time, position, years in position, the answers, and how many minutes
+start time, position, activities, years in position, the answers, and how many minutes
 the survey took. The page does not ask for a name or email address. While
 someone is answering, their answers are kept in their own browser so a reload
 does not lose them; they are removed when the answers are sent, when the
@@ -143,14 +150,19 @@ What the less obvious columns hold:
 
 | Column | Content |
 | --- | --- |
-| `t1_result`, `t2_result` | "Were you able to complete this task?": Yes / Partly / No / Unsure what to do |
-| `t1_note`, `t2_note` | "What did you do, and what happened?" |
+| `activities` | "Which instrument-processing activities do you currently carry out?" The ticked answers, separated by "; ": Receiving and checking instruments before washing / Cleaning instruments / Inspecting instruments after washing / Assembling and checking instrument sets / Packing sets for sterilisation / None of these / Other (typed in `activities_other`) |
+| `years` | Less than 1 year / 1 to less than 6 years / 6 to 10 years / More than 10 years |
+| `t1_result`, `t2_result` | "Were you able to complete this task?": Yes / Partly / No / Could not open or use the screen (a technical problem) |
+| `t1_note`, `t2_note` | "What did you do, and what happened? Please describe anything that was unclear." |
 | `t1_ease`, `t2_ease` | "How easy or difficult was this task?" 0 (very difficult) to 10 (very easy) |
-| `t1_useful`, `t2_useful` | How useful the function would be in their work, 0 (not useful at all) to 10 (very useful): the tray check, the chat |
-| `t3_result` | "Based on the information shown, what can you conclude about this set?" (text), given before they are told that the labels for slots 2 and 4 were swapped on purpose; see "Task 3" |
-| `t3_spot` | "How easy or difficult would it be to spot a wrongly labelled instrument in a photo like this?" 0 (very difficult) to 10 (very easy) |
-| `t3_confidence` | "As a check on IRIS's sorting, how much confidence would a labelled photo like this give you that a set was sorted correctly?" 0 (no confidence) to 10 (complete confidence) |
-| `t2_frequency` | How often a tray has an instrument not in its set, or is missing one: Never / Rarely (about 1 in 100 trays or fewer) / About 1 in 50 trays / About 1 in 10 trays / More often than 1 in 10 trays / Not sure |
-| `t2_convenient` | How convenient typing to IRIS at the sorting station would be, 0 (very inconvenient) to 10 (very convenient) |
+| `t1_useful`, `t2_useful` | How useful the function would be in their work, 0 (not useful at all) to 10 (very useful): the tray check, the chat. Or the text "Cannot judge, or not applicable to my work" (t1), "I did not use the chat, or cannot judge" (t2) |
+| `t2_frequency` | "In your usual work, approximately how often does a tray contain at least one unexpected instrument or have an expected instrument missing?": Never / Less than 1 in 100 trays / About 1–4 in 100 trays / About 5–9 in 100 trays / About 10 or more in 100 trays / I do not handle or check these trays / Not sure |
+| `t2_convenient` | How convenient typing to IRIS at the sorting station would be, 0 (very inconvenient) to 10 (very convenient), or "Cannot judge from this demonstration" |
+| `t3_review` | "What did you notice, and what would you do next with this set?" (text), given before they are told that the labels for slots 2 and 4 were swapped on purpose; see "Task 3" |
+| `t3_assess` | "How easy or difficult was it to assess the sorting result using this photo?" 0 (very difficult) to 10 (very easy), or "Unable to assess" |
+| `t3_confidence` | "How confident are you in your assessment of the sorting result shown?" 0 (not at all confident) to 10 (very confident), or "Unable to assess" |
+| `t3_improve` | "What, if anything, would help you assess the result more accurately?" (optional text), after the reveal |
 | `stage` | Where the process could fit; "Another stage: …" includes the stage they typed |
-| `elsewhere` | "Apart from sorting, where else in your work could a system that recognises and counts instruments help?" |
+
+A "cannot judge" answer is stored as its text in the same column as the 0-10
+ratings; leave those rows out when averaging a rating, and count them separately.

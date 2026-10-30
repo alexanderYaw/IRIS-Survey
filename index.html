@@ -84,6 +84,7 @@
   .screen > fieldset + fieldset { margin-top: 12px; }
   .followup { display: grid; gap: 32px; }
   legend, .q { font: 600 19px/1.35 var(--display); padding: 0; margin-bottom: 4px; }
+  legend .note { display: block; font: 400 15px/1.4 var(--body); }
   .choices { display: grid; gap: 8px; }
   .choices.row { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); }
   .choice { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 10px 14px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); cursor: pointer; }
@@ -97,6 +98,8 @@
   /* 0-10 number line */
   .scale.eleven { grid-template-columns: repeat(11, minmax(0, 1fr)); gap: 4px; }
   .scale.eleven .choice { min-height: 60px; padding: 8px 0; }
+  /* "Cannot judge" sits apart from the number line, so the midpoint stays a judgement. */
+  .choice.na { justify-self: start; margin-top: 6px; }
   textarea, input[type="text"] { width: 100%; font: inherit; color: var(--ink); background: var(--surface); border: 1.5px solid var(--field-line); border-radius: 10px; padding: 12px 14px; }
   textarea { min-height: 88px; resize: vertical; }
   .error { color: var(--warn); font-weight: 700; font-size: 16px; }
@@ -202,8 +205,10 @@
     <div class="card">
       <ul>
         <li><b>About 12 minutes:</b> a short video, two tasks on a clickable screen, a photo to review, and a few questions.</li>
-        <li>The clickable screen is <b>not connected to a robot</b>.</li>
-        <li>We built IRIS, so problems you find are the most useful answers.</li>
+        <li>The video shows the current IRIS system sorting a real tray. The clickable screen in tasks 1 and 2 is a proposed design and is <b>not connected to a robot</b>. Its chat, which can change what IRIS sorts, is not part of the current system.</li>
+        <li>We, the study team, built IRIS. Please tell us what works, what does not, and what is missing.</li>
+        <li>We do not ask for your name or email address. We collect your answers, a generated response ID, the time you started, and how long the survey took. They are sent to a Google Sheet that only the study team can open.</li>
+        <li>Until you send them, your answers are saved in this browser so that reloading the page does not lose them. They are removed from the browser when you send them, when you choose “Stop and clear my answers”, or after 8 hours.</li>
         <li>Taking part is voluntary; you can stop at any time. Questions: <span data-config="contact"></span>.</li>
       </ul>
     </div>
@@ -229,12 +234,28 @@
       </div>
     </fieldset>
     <fieldset>
+      <legend>Which instrument-processing activities do you currently carry out? <span class="note">Select all that apply.</span></legend>
+      <div class="choices">
+        <label class="choice"><input type="checkbox" name="activities" value="Receiving and checking instruments before washing"> Receiving and checking instruments before washing</label>
+        <label class="choice"><input type="checkbox" name="activities" value="Cleaning instruments"> Cleaning instruments</label>
+        <label class="choice"><input type="checkbox" name="activities" value="Inspecting instruments after washing"> Inspecting instruments after washing</label>
+        <label class="choice"><input type="checkbox" name="activities" value="Assembling and checking instrument sets"> Assembling and checking instrument sets</label>
+        <label class="choice"><input type="checkbox" name="activities" value="Packing sets for sterilisation"> Packing sets for sterilisation</label>
+        <label class="choice"><input type="checkbox" name="activities" value="None of these"> None of these</label>
+        <label class="choice"><input type="checkbox" name="activities" value="Other"> Other</label>
+      </div>
+      <div class="other" id="activities_other_box" hidden>
+        <label class="note" for="activities_other">Which other activities?</label>
+        <input type="text" id="activities_other" name="activities_other" autocomplete="off">
+      </div>
+    </fieldset>
+    <fieldset>
       <legend>How long have you worked in this position?</legend>
       <div class="choices row">
-        <label class="choice"><input type="radio" name="years" value="Under 1 year"> Under 1 year</label>
-        <label class="choice"><input type="radio" name="years" value="1-5 years"> 1–5 years</label>
-        <label class="choice"><input type="radio" name="years" value="6-10 years"> 6–10 years</label>
-        <label class="choice"><input type="radio" name="years" value="Over 10 years"> Over 10 years</label>
+        <label class="choice"><input type="radio" name="years" value="Less than 1 year"> Less than 1 year</label>
+        <label class="choice"><input type="radio" name="years" value="1 to less than 6 years"> 1 to less than 6 years</label>
+        <label class="choice"><input type="radio" name="years" value="6 to 10 years"> 6–10 years</label>
+        <label class="choice"><input type="radio" name="years" value="More than 10 years"> More than 10 years</label>
       </div>
     </fieldset>
     <p class="error" data-error role="alert" hidden></p>
@@ -249,26 +270,22 @@
     </video>
     <div class="video-labels"><span><b>The operator's screen</b></span><span><b>The robot arm</b></span></div>
     <div class="measure video-steps">
-      <p>In the video, the operator follows the standard steps:</p>
+      <p>In the video, the operator follows this sequence:</p>
       <ol>
         <li>Presses <b>Check the next tray</b>. The camera finds the instruments on the input tray.</li>
-        <li>Presses <b>Start sorting</b>. IRIS picks the instruments in an order that does not disturb the pile.</li>
+        <li>Presses <b>Start sorting</b>. IRIS picks the instruments in the order it has selected.</li>
         <li>The arm moves each instrument into its slot in the receiving tray, one at a time.</li>
         <li>When all are placed, the camera photographs the receiving tray. The operator checks that each instrument is labelled correctly, in the right slot.</li>
       </ol>
       <p class="note">Most of the video plays at 1.5× speed.</p>
     </div>
-    <fieldset class="measure">
-      <label class="q" for="video_note">What stood out to you? <span class="note">(optional)</span></label>
-      <textarea id="video_note" name="video_note"></textarea>
-    </fieldset>
     <div class="nav"><button class="btn quiet" type="button" data-back>Back</button><button class="btn primary" type="button" data-next>Next</button></div>
   </section>
 
   <!-- 3: tasks intro -->
   <section class="screen shell" data-screen="tasks-intro" data-name="Tasks" hidden>
     <h2>Three short tasks</h2>
-    <p class="lede">In tasks 1 and 2 you will use a proposed new design of the operator's screen, opened at different moments. Do what you would do at work, then press <b>Return to questions</b>, whether or not you finished the task. Task 3 shows a photo from the screen to review.</p>
+    <p class="lede">In tasks 1 and 2 you will use a proposed new design of the operator's screen, opened at different moments. Do what you would do at work, then press <b>Return to questions</b>, whether or not you finished the task. Task 3 shows an example result photo to review.</p>
     <div class="card">
       <p>We are testing the design, not your performance. If you are unsure what to do or cannot complete a task, that is useful feedback.</p>
       <p class="note">The screen works best on a computer or tablet. On a phone, turn it sideways.</p>
@@ -291,24 +308,10 @@
   </template>
   <div id="task-screens"></div>
 
-  <!-- After task 3: the deliberate label error, then two ratings. No Back: the
-       answer about the photo is kept as it was given before the error was shown. -->
-  <section class="screen shell" data-screen="t3-reveal" data-name="Task 3 of 3" hidden>
-    <h2>About the photo you just reviewed</h2>
-    <div class="task-card">
-      <p class="prompt">Two labels in this photo were wrong on purpose.</p>
-      <p>The tissue forceps in slot 2 were labelled “Artery forceps”, and the artery forceps in slot 4 were labelled “Tissue forceps”. We did this to see whether the photo helps people catch a mistake.</p>
-      <div data-photo></div>
-    </div>
-    <div class="followup" id="reveal-questions"></div>
-    <p class="error" data-error role="alert" hidden></p>
-    <div class="nav"><span></span><button class="btn primary" type="button" data-next>Next</button></div>
-  </section>
-
   <!-- 8: rating -->
   <section class="screen shell" data-screen="rating" data-name="The screen" hidden>
-    <h2>The screen you just used</h2>
-    <p class="lede">Please rate the proposed operator screen you interacted with in tasks 1 and 2.</p>
+    <h2>The screen in tasks 1 and 2</h2>
+    <p class="lede">Please rate the proposed operator screen you used in tasks 1 and 2.</p>
     <fieldset>
       <legend>This screen's capabilities meet my requirements.</legend>
       <div class="scale" data-scale="umux_capabilities"></div>
@@ -321,6 +324,22 @@
     </fieldset>
     <p class="error" data-error role="alert" hidden></p>
     <div class="nav"><button class="btn quiet" type="button" data-back>Back</button><button class="btn primary" type="button" data-next>Next</button></div>
+  </section>
+
+  <!-- After task 3 and the screen ratings: the deliberate label error, so that knowing
+       about it affects neither. No Back: the answers about the photo stay as given. -->
+  <section class="screen shell" data-screen="t3-reveal" data-name="About the photo" hidden>
+    <h2>About the photo in task 3</h2>
+    <div class="task-card">
+      <p class="prompt">Two labels in this photo were wrong on purpose.</p>
+      <p>The tissue forceps in slot 2 were labelled “Artery forceps”, and the artery forceps in slot 4 were labelled “Tissue forceps”. We did this to see whether the photo helps people catch a mistake. Your answers are useful whether or not you noticed it.</p>
+      <div data-photo></div>
+    </div>
+    <fieldset>
+      <label class="q" for="t3_improve">What, if anything, would help you assess the result more accurately? <span class="note">(optional)</span></label>
+      <textarea id="t3_improve" name="t3_improve"></textarea>
+    </fieldset>
+    <div class="nav"><span></span><button class="btn primary" type="button" data-next>Next</button></div>
   </section>
 
   <!-- 9: your work -->
@@ -344,10 +363,6 @@
     <fieldset>
       <label class="q" for="influence">What would affect whether IRIS could be used where you work?</label>
       <textarea id="influence" name="influence"></textarea>
-    </fieldset>
-    <fieldset>
-      <label class="q" for="elsewhere">Apart from sorting, where else in your work could a system that recognises and counts instruments help?</label>
-      <textarea id="elsewhere" name="elsewhere"></textarea>
     </fieldset>
     <fieldset>
       <label class="q" for="other">Anything else you want to tell us? <span class="note">(optional)</span></label>
@@ -404,17 +419,18 @@
   // controls. Task 3 (`photo`) shows a picture of the result screen instead: the labelled
   // photo with the slot 2 and slot 4 names swapped on purpose, rendered from
   // prototype.html#result&mislabel into review-photo.jpg and review-photo-narrow.jpg.
+  // `usefulNa` is the answer, apart from the 0-10 line, for someone who cannot judge.
   const TASKS = [
     { key: "t1", start: "idle", title: "Prepare for sorting", prompt: "You have placed a tray in the sorting area. Use the screen to prepare it for sorting. Finish when you believe sorting can begin (you do not need to start it), or when you cannot proceed.",
-      useful: "How useful would the tray check be in your work?" },
+      useful: "How useful would the tray check be in your work?", usefulNa: "Cannot judge, or not applicable to my work" },
     { key: "t2", start: "ready&extra", title: "Extra instrument", prompt: "Before sorting starts, you notice an additional instrument on the input tray, a No. 3L handle, that is not listed as part of this set. Show what you would do next.",
-      useful: "How useful would the chat be for telling IRIS that a tray does not match the set?" },
-    { key: "t3", photo: true, title: "Review the result", prompt: "This is a different tray from task 2. Its set has five instruments, including a No. 3L handle. Sorting has finished, and this is the photo IRIS took of the receiving tray, with each instrument labelled. Review it and decide what you would do next with this set." },
+      useful: "How useful would the chat be for telling IRIS that a tray does not match the set?", usefulNa: "I did not use the chat, or cannot judge" },
+    { key: "t3", photo: true, title: "Review the result", prompt: "This is a different tray from task 2. Its set has five instruments, including a No. 3L handle. Sorting has finished. This example shows how the proposed result photo and instrument labels would appear. Review it as you would before the set moves to the next stage, then answer the questions below it." },
   ];
 
   // Answers are kept in this browser until they are sent, cleared, or KEEP_HOURS old.
-  // v2: the three-task version; unfinished answers saved by the four-task version are not reused.
-  const STORE = "iris-study-v2";
+  // v3: task 3's questions before the screen ratings; unfinished answers from earlier versions are not reused.
+  const STORE = "iris-study-v3";
   const KEEP_HOURS = 8;
   const answers = {};
   try { Object.assign(answers, JSON.parse(localStorage.getItem(STORE) || "{}")); } catch (e) {}
@@ -439,43 +455,49 @@
         <label class="choice"><input type="radio" name="${t.key}_result" value="Yes"> Yes</label>
         <label class="choice"><input type="radio" name="${t.key}_result" value="Partly"> Partly</label>
         <label class="choice"><input type="radio" name="${t.key}_result" value="No"> No</label>
-        <label class="choice"><input type="radio" name="${t.key}_result" value="Unsure what to do"> I was unsure what to do</label>
+        <label class="choice"><input type="radio" name="${t.key}_result" value="Could not open or use the screen"> I could not open or use the screen (a technical problem)</label>
       </div>
     </fieldset>
     <fieldset>
-      <label class="q" for="${t.key}_note">What did you do, and what happened? If you were unsure or unable to continue, please describe where.</label>
+      <label class="q" for="${t.key}_note">What did you do, and what happened? Please describe anything that was unclear.</label>
       <textarea id="${t.key}_note" name="${t.key}_note"></textarea>
     </fieldset>`;
-  // The review task asks what the photo tells them, not for a sterilisation decision.
+  // The review task asks what they noticed and what they would do, without saying that
+  // anything is wrong; the ratings are their own judgement, before the error is shown.
   const review = (t) => `
     <fieldset>
-      <label class="q" for="${t.key}_result">Based on the information shown, what can you conclude about this set?</label>
-      <textarea id="${t.key}_result" name="${t.key}_result"></textarea>
-    </fieldset>`;
+      <label class="q" for="${t.key}_review">What did you notice, and what would you do next with this set?</label>
+      <textarea id="${t.key}_review" name="${t.key}_review"></textarea>
+    </fieldset>` +
+    rate(`${t.key}_assess`, "How easy or difficult was it to assess the sorting result using this photo?", "Very difficult", "Very easy", "Unable to assess") +
+    rate(`${t.key}_confidence`, "How confident are you in your assessment of the sorting result shown?", "Not at all confident", "Very confident", "Unable to assess");
   const PHOTO = `
     <figure class="review-shot">
       <picture>
         <source media="(max-width: 560px)" srcset="review-photo-narrow.jpg" width="864" height="1075">
-        <img src="review-photo.jpg" width="1520" height="932" alt="Photo of the receiving tray from above after sorting, with five instruments. Each has a label with its name and slot: slot 1 No. 3 handle, slot 2 Artery forceps, slot 3 Surgical scissors, slot 4 Tissue forceps, slot 5 No. 3L handle.">
+        <img src="review-photo.jpg" width="1520" height="932" alt="Example photo of the receiving tray from above after sorting, with five instruments. Each has a label with its name and slot: slot 1 No. 3 handle, slot 2 Artery forceps, slot 3 Surgical scissors, slot 4 Tissue forceps, slot 5 No. 3L handle.">
       </picture>
-      <figcaption>IRIS's photo after sorting: 5 of 5 instruments placed.</figcaption>
+      <figcaption>Example result photo: 5 of 5 instruments placed.</figcaption>
     </figure>`;
-  // A 0-10 number line.
-  const rate = (name, question, low, high) => `
+  // A 0-10 number line, and optionally a separate answer `na` (stored as its text) for someone who cannot judge.
+  const rate = (name, question, low, high, na) => `
     <fieldset>
       <legend>${question}</legend>
       <div class="scale eleven" data-scale="${name}" data-from="0" data-to="10" data-low="${low}" data-high="${high}"></div>
       <div class="scale-ends"><span>0: ${low}</span><span>10: ${high}</span></div>
+      ${na ? `<label class="choice na"><input type="radio" name="${name}" value="${na}"> ${na}</label>` : ""}
     </fieldset>`;
   const ratings = (t) => rate(`${t.key}_ease`, "How easy or difficult was this task?", "Very difficult", "Very easy") +
-    (t.useful ? rate(`${t.key}_useful`, t.useful, "Not useful at all", "Very useful") : "");
-  // Task 2 also asks how often a tray does not match its set, and whether typing at the station suits them.
-  const FREQUENCY = ["Never", "Rarely (about 1 in 100 trays or fewer)", "About 1 in 50 trays", "About 1 in 10 trays", "More often than 1 in 10 trays", "Not sure"];
+    (t.useful ? rate(`${t.key}_useful`, t.useful, "Not useful at all", "Very useful", t.usefulNa) : "");
+  // Task 2 also asks how often a tray does not match its set (an extra or a missing
+  // instrument, the cases in tasks 2 and 1), and whether typing at the station suits them.
+  const FREQUENCY = ["Never", "Less than 1 in 100 trays", "About 1–4 in 100 trays", "About 5–9 in 100 trays", "About 10 or more in 100 trays", "I do not handle or check these trays", "Not sure"];
   const mismatch = () => `
     <fieldset>
-      <legend>In your work, how often does a tray have an instrument that is not part of its set, or is missing one?</legend>
+      <legend>In your usual work, approximately how often does a tray contain at least one unexpected instrument or have an expected instrument missing?</legend>
+      <p class="note">A rough estimate is fine.</p>
       <div class="choices">${FREQUENCY.map((v) => `<label class="choice"><input type="radio" name="t2_frequency" value="${v}"> ${v}</label>`).join("")}</div>
-    </fieldset>` + rate("t2_convenient", "How convenient would it be to type messages to IRIS at the sorting station?", "Very inconvenient", "Very convenient");
+    </fieldset>` + rate("t2_convenient", "How convenient would it be to type messages to IRIS at the sorting station?", "Very inconvenient", "Very convenient", "Cannot judge from this demonstration");
   TASKS.forEach((t, i) => {
     const s = tpl.content.firstElementChild.cloneNode(true);
     s.dataset.screen = t.key;
@@ -489,9 +511,6 @@
     box.append(s);
   });
   document.querySelector("[data-screen='t3-reveal'] [data-photo]").outerHTML = PHOTO;
-  document.getElementById("reveal-questions").innerHTML =
-    rate("t3_spot", "How easy or difficult would it be to spot a wrongly labelled instrument in a photo like this?", "Very difficult", "Very easy") +
-    rate("t3_confidence", "As a check on IRIS's sorting, how much confidence would a labelled photo like this give you that a set was sorted correctly?", "No confidence", "Complete confidence");
   // The questions about a task, and the way on, appear once the task has been tried (at once for the photo).
   function syncTask(s) {
     const t = TASKS[Number(s.dataset.task)];
@@ -530,12 +549,18 @@
   const fill = () => fields().forEach((el) => {
     const v = answers[el.name];
     if (el.type === "radio") el.checked = v !== undefined && el.value === v;
-    else if (el.type === "checkbox") el.checked = Boolean(v);
+    else if (el.type === "checkbox") el.checked = Array.isArray(v) ? v.includes(el.value) : Boolean(v);
     else el.value = v ?? "";
   });
   const otherBox = document.getElementById("position_other_box");
+  const activitiesBox = document.getElementById("activities_other_box");
   const stageBox = document.getElementById("stage_other_box");
-  const syncOther = () => { otherBox.hidden = answers.position !== "Other"; stageBox.hidden = answers.stage !== "Another stage"; };
+  const ticked = (name) => answers[name] || [];
+  const syncOther = () => {
+    otherBox.hidden = answers.position !== "Other";
+    activitiesBox.hidden = !ticked("activities").includes("Other");
+    stageBox.hidden = answers.stage !== "Another stage";
+  };
   const taskScreens = () => document.querySelectorAll("[data-task]");
   fill();
   syncOther();
@@ -543,8 +568,13 @@
   document.addEventListener("input", (e) => {
     const el = e.target;
     if (!el.name) return;
-    answers[el.name] = el.type === "checkbox" ? el.checked : el.value;
-    if (el.name === "position" || el.name === "stage") syncOther();
+    if (el.type === "checkbox" && el.hasAttribute("value")) {
+      // A select-all-that-apply group keeps the ticked values; "None of these" and the others exclude each other.
+      const group = [...document.querySelectorAll(`input[type="checkbox"][name="${el.name}"]`)];
+      if (el.checked) group.forEach((g) => { if (g !== el && (g.value === "None of these" || el.value === "None of these")) g.checked = false; });
+      answers[el.name] = group.filter((g) => g.checked).map((g) => g.value);
+    } else answers[el.name] = el.type === "checkbox" ? el.checked : el.value;
+    if (["position", "activities", "stage"].includes(el.name)) syncOther();
     save();
   });
   document.addEventListener("change", (e) => { if (e.target.type === "radio" || e.target.type === "checkbox") e.target.dispatchEvent(new Event("input", { bubbles: true })); });
@@ -623,11 +653,12 @@
     welcome: () => (answers.consent ? "" : "Please tick the box to agree before you start."),
     about: () => (!answers.position ? "Please choose your position." :
       answers.position === "Other" && !(answers.position_other || "").trim() ? "Please type your position." :
+      !ticked("activities").length ? "Please choose the activities you carry out, or “None of these”." :
+      ticked("activities").includes("Other") && !(answers.activities_other || "").trim() ? "Please type your other activities." :
       !answers.years ? "Please say how long you have worked in this position." : ""),
     t1: () => taskDone("t1_result", "t1_ease", "t1_useful"),
     t2: () => taskDone("t2_result", "t2_ease", "t2_useful", "t2_frequency", "t2_convenient"),
-    t3: () => ((answers.t3_result || "").trim() ? "" : "Please say what you can conclude about this set."),
-    "t3-reveal": () => (answers.t3_spot && answers.t3_confidence ? "" : "Please answer both questions."),
+    t3: () => ((answers.t3_review || "").trim() && answers.t3_assess && answers.t3_confidence ? "" : "Please answer each question about the photo."),
     rating: () => (answers.umux_capabilities && answers.umux_easy ? "" : "Please answer both statements."),
     work: () => (!answers.stage ? "Please choose an answer about where it could fit." :
       answers.stage === "Another stage" && !(answers.stage_other || "").trim() ? "Please say which stage." : ""),
@@ -709,11 +740,11 @@
 
   // ---- Sending ----
   // Keep in step with FIELDS in apps-script.gs.
-  const FIELDS = ["response_id", "started_at", "minutes_taken", "position", "position_other", "years", "video_note",
+  const FIELDS = ["response_id", "started_at", "minutes_taken", "position", "position_other", "activities", "activities_other", "years",
     "t1_result", "t1_note", "t1_ease", "t1_useful",
     "t2_result", "t2_note", "t2_ease", "t2_useful", "t2_frequency", "t2_convenient",
-    "t3_result", "t3_spot", "t3_confidence",
-    "umux_capabilities", "umux_easy", "stage", "influence", "elsewhere", "other"];
+    "t3_review", "t3_assess", "t3_confidence",
+    "umux_capabilities", "umux_easy", "t3_improve", "stage", "influence", "other"];
   const SEND_WAIT = 25000; // ms before an unanswered send counts as failed
   const within = (ms) => (AbortSignal.timeout ? AbortSignal.timeout(ms) : undefined);
   async function submit(button) {
@@ -729,6 +760,8 @@
     const payload = {};
     FIELDS.forEach((k) => { payload[k] = answers[k] ?? ""; });
     if (payload.position !== "Other") payload.position_other = "";
+    payload.activities = ticked("activities").join("; ");
+    if (!ticked("activities").includes("Other")) payload.activities_other = "";
     if (payload.stage === "Another stage") payload.stage = `Another stage: ${(answers.stage_other || "").trim()}`;
     button.disabled = true; button.textContent = "Sending…";
     err.hidden = true;

@@ -3,15 +3,15 @@
 // and deploy as a web app (see README.md).
 
 // Each version whose columns change writes to a new tab with its own header.
-// Version 3: three tasks (the collision task removed; task 3 is the photo review).
-// Older "Responses" and "Responses v2" tabs (test rows only) can be deleted.
-const SHEET_NAME = "Responses v3";
+// Version 4: task 3's questions asked before the screen ratings, work activities,
+// and "cannot judge" answers. Older "Responses", "Responses v2" and "Responses v3" tabs (test rows only) can be deleted.
+const SHEET_NAME = "Responses v4";
 // Column order; the page sends these keys (keep in step with FIELDS in index.html). "received_at" is added here.
-const FIELDS = ["response_id", "started_at", "minutes_taken", "position", "position_other", "years", "video_note",
+const FIELDS = ["response_id", "started_at", "minutes_taken", "position", "position_other", "activities", "activities_other", "years",
   "t1_result", "t1_note", "t1_ease", "t1_useful",
   "t2_result", "t2_note", "t2_ease", "t2_useful", "t2_frequency", "t2_convenient",
-  "t3_result", "t3_spot", "t3_confidence",
-  "umux_capabilities", "umux_easy", "stage", "influence", "elsewhere", "other"];
+  "t3_review", "t3_assess", "t3_confidence",
+  "umux_capabilities", "umux_easy", "t3_improve", "stage", "influence", "other"];
 const MAX_TEXT = 4000;
 
 function doPost(e) {
