@@ -64,16 +64,25 @@
   .screen h2 { font-size: 26px; font-weight: 600; line-height: 1.2; }
   .lede { font-size: 19px; color: var(--ink-2); max-width: 62ch; }
   .card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; display: grid; gap: 12px; }
+  /* A grey line that belongs to the heading above it: tight under the heading, more space before what follows. */
+  .card .sub { margin: -8px 0 8px; color: var(--ink-2); }
+  .card a { color: var(--ink); text-underline-offset: 3px; text-decoration-thickness: 1.5px; overflow-wrap: anywhere; }
   .card ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
   .card h2 { font-size: 21px; }
   .card p + h2 { margin-top: 10px; }
 
-  /* The proposed workflow: who does each step */
-  .flow { list-style: none; margin: 0; padding: 0; display: grid; gap: 30px; }
-  .flow li { position: relative; display: grid; grid-template-columns: 58px minmax(0, 1fr); gap: 12px; align-items: start; }
-  /* An arrow centred between each tag and the next one, however many lines the step has:
-     the box runs from the tag's bottom (2px margin + 24.6px tag) to the next tag's top (30px gap + 2px margin). */
-  .flow li:not(:last-child)::after { content: ""; position: absolute; left: 23px; width: 12px; top: 27px; bottom: -32px; background: var(--ink-2); -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 20'%3E%3Cpath d='M6 1v17M1.5 13.5 6 18l4.5-4.5' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 12px 20px no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 20'%3E%3Cpath d='M6 1v17M1.5 13.5 6 18l4.5-4.5' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 12px 20px no-repeat; }
+  /* The proposed workflow in three phases: side by side on wide screens, stacked on phones, an arrow between each. */
+  .phases { list-style: none; margin: 0; padding: 0; display: grid; gap: 40px; }
+  .phases > .phase { position: relative; display: grid; gap: 12px; align-content: start; }
+  .phases h3 { font: 600 17px/1.25 var(--display); padding-bottom: 8px; border-bottom: 2px solid var(--accent); }
+  .phases .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+  .phases .steps > li { display: grid; gap: 6px; justify-items: start; font-size: 16px; line-height: 1.45; }
+  .phases .who { min-width: 58px; }
+  .phases > .phase:not(:last-child)::after { content: ""; position: absolute; left: calc(50% - 6px); bottom: -30px; width: 12px; height: 20px; background: var(--ink-2); -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 20'%3E%3Cpath d='M6 1v17M1.5 13.5 6 18l4.5-4.5' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 12px 20px no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 20'%3E%3Cpath d='M6 1v17M1.5 13.5 6 18l4.5-4.5' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 12px 20px no-repeat; }
+  @media (min-width: 700px) {
+    .phases { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .phases > .phase:not(:last-child)::after { left: auto; right: -30px; bottom: auto; top: 2px; width: 20px; height: 12px; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 12'%3E%3Cpath d='M1 6h17M13.5 1.5 18 6l-4.5 4.5' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 20px 12px no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 12'%3E%3Cpath d='M1 6h17M13.5 1.5 18 6l-4.5 4.5' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 20px 12px no-repeat; }
+  }
   .who { margin-top: 2px; padding: 5px 0 4px; border-radius: 6px; text-align: center; font: 700 13px/1.2 var(--display); letter-spacing: 0.05em; text-transform: uppercase; }
   .who.you { background: var(--accent); color: var(--accent-ink); }
   .who.iris { background: var(--line); color: var(--ink); }
@@ -117,14 +126,20 @@
   .stop { display: flex; flex-wrap: wrap; align-items: center; gap: 0 8px; margin-top: 40px; padding-top: 8px; border-top: 1px solid var(--line); font-size: 15px; color: var(--ink-2); }
 
   /* Video */
-  video { width: 100%; max-width: 100%; height: auto; display: block; aspect-ratio: 2464 / 666; border-radius: 10px; background: var(--line); }
-  .video-labels { display: grid; grid-template-columns: 1280fr 1184fr; gap: 12px; font-size: 15px; color: var(--ink-2); text-align: center; }
-  .video-labels b { color: var(--ink); font-family: var(--display); font-weight: 600; }
+  /* Two synced recordings side by side, each in a small frame with its label inside at the bottom; stacked on phones. */
+  .videos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .clip { margin: 0; padding: 6px; display: grid; gap: 6px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+  .clip video { width: 100%; height: auto; display: block; aspect-ratio: 16 / 9; border-radius: 7px; background: var(--line); }
+  .clip figcaption { padding: 0 4px 2px; text-align: center; font: 600 15px/1.3 var(--display); color: var(--ink); }
   .video-steps { display: grid; gap: 8px; }
-  .video-steps ol { margin: 0; padding-left: 24px; display: grid; gap: 6px; }
+  .video-steps ol { margin: 6px 0 0; padding-left: 28px; display: grid; gap: 0; }
+  .video-steps li { padding-left: 4px; }
+  .video-steps li + li { margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--line); }
+  .video-steps li::marker { color: var(--accent); font: 700 18px var(--display); }
 
   /* Task, and the notice about unfinished answers */
   .task-card, .notice { background: var(--accent-soft); border-radius: 12px; padding: 18px 20px; display: grid; gap: 14px; justify-items: start; }
+  .scenario { display: grid; gap: 8px; }
   .task-card .prompt { font-size: 21px; font-weight: 700; line-height: 1.35; }
   /* Task 3: the labelled result photo, shown as a picture */
   .review-shot { margin: 0; display: grid; gap: 6px; width: 100%; }
@@ -145,6 +160,9 @@
   #runner-frame { height: 100%; }
   .runner iframe { width: 100%; height: 100%; border: 0; display: block; }
   #runner-more, .runner-rotate { display: none; }
+  /* Once a task ends inside the prototype, "Return to questions" hops every few seconds until pressed. */
+  .btn.nudge { animation: nudge 2.8s cubic-bezier(0.3, 0, 0.3, 1) infinite; }
+  @keyframes nudge { 0%, 18%, 100% { transform: translateY(0); } 6% { transform: translateY(-7px); } 12% { transform: translateY(0); } 15% { transform: translateY(-3px); } }
 
   /* A phone held upright is too narrow for the operator screen. */
   @media (orientation: portrait) and (max-width: 700px) {
@@ -166,7 +184,7 @@
     .scale.eleven { gap: 3px; }
     .scale.eleven .choice { min-height: 54px; padding: 6px 0; border-radius: 7px; font-size: 14px; }
     .scale.eleven .choice input { width: 18px; height: 18px; }
-    .video-labels { grid-template-columns: 1fr; gap: 2px; }
+    .videos { grid-template-columns: 1fr; }
   }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
@@ -180,36 +198,29 @@
 <main id="main">
   <!-- 0: welcome and consent -->
   <section class="screen shell" data-screen="welcome" data-name="Welcome">
-    <h1>IRIS sorting study</h1>
-    <p class="lede">IRIS is a prototype robotic system designed to sort surgical instruments from an input tray into designated positions in a receiving tray. This study asks for your feedback on the proposed workflow and operator screen.</p>
+    <h1>IRIS Sorting Study</h1>
+    <p class="lede">IRIS is intended for use in the instrument reprocessing cycle. The system would automatically sort used instruments returned from the operating theatre, where they are often mixed together in cluttered trays.</p>
     <div class="notice" id="resume" hidden>
       <p><b>This browser has unfinished answers</b><span id="resume-age"></span>. If they are yours, tick the box below and continue. If not, start again and they will be deleted.</p>
       <button class="btn quiet" type="button" id="start-over">Start again</button>
     </div>
-    <section class="card" aria-labelledby="fit-title">
-      <h2 id="fit-title">Where IRIS would be used</h2>
-      <p>IRIS would work in the CSSD, at a sorting station where a set is prepared. We have not decided whether this would be when instruments arrive, before washing, or after washing, during inspection and assembly. One of the questions asks what you think.</p>
+    <section class="card">
       <h2 id="role-title">The proposed workflow, and your part in it</h2>
-      <p>The person at the sorting station is the operator. In this study, that is you.</p>
-      <ol class="flow" aria-labelledby="role-title">
-        <li><span class="who you">You<span class="sr">:</span></span><span>Place the tray of instruments at the sorting station, next to an empty receiving tray.</span></li>
-        <li><span class="who iris">IRIS<span class="sr">:</span></span><span>Checks the tray with its camera against the list of instruments in the set, and shows what it found.</span></li>
-        <li><span class="who you">You<span class="sr">:</span></span><span>Answer any questions from IRIS, decide what to do if the tray does not match the set, then start sorting.</span></li>
-        <li><span class="who iris">IRIS<span class="sr">:</span></span><span>Moves each instrument into its position in the receiving tray.</span></li>
-        <li><span class="who you">You<span class="sr">:</span></span><span>Stay at the station, within reach of the STOP button, until sorting ends. Alerts appear only on the screen.</span></li>
-        <li><span class="who iris">IRIS<span class="sr">:</span></span><span>Takes a photo of the receiving tray and labels each instrument in it.</span></li>
-        <li><span class="who you">You<span class="sr">:</span></span><span>Check the result before the set moves to the next stage.</span></li>
+      <p class="sub">The person at the sorting station is the operator. In this study, that is you.</p>
+      <ol class="phases" aria-labelledby="role-title">
+        <li class="phase"><h3>Before sorting</h3><ol class="steps"><li><span class="who you">You<span class="sr">:</span></span><span>Place the tray of instruments at the sorting station, next to an empty receiving tray.</span></li><li><span class="who iris">IRIS<span class="sr">:</span></span><span>Checks the tray with its camera against a list of instruments from one of multiple fixed sets, and shows what it found.</span></li><li><span class="who you">You<span class="sr">:</span></span><span>Decide what to do if the tray does not match the set, then start sorting.</span></li></ol></li>
+        <li class="phase"><h3>While IRIS sorts</h3><ol class="steps"><li><span class="who iris">IRIS<span class="sr">:</span></span><span>Moves each instrument into its position in the receiving tray.</span></li><li><span class="who you">You<span class="sr">:</span></span><span>Stay at the station, within reach of the STOP button, until sorting ends. Alerts appear only on the screen.</span></li></ol></li>
+        <li class="phase"><h3>After sorting</h3><ol class="steps"><li><span class="who iris">IRIS<span class="sr">:</span></span><span>Takes a photo of the receiving tray and labels each instrument in it.</span></li><li><span class="who you">You<span class="sr">:</span></span><span>Check the result before the set moves to the next stage.</span></li></ol></li>
       </ol>
-      <p class="note">IRIS does not inspect instruments for damage or cleanliness; that stays with staff.</p>
+      <p class="note">IRIS does not inspect instruments for damage or cleanliness.</p>
     </section>
     <div class="card">
       <ul>
         <li><b>About 12 minutes:</b> a short video, two tasks on a clickable screen, a photo to review, and a few questions.</li>
-        <li>The video shows the current IRIS system sorting a real tray. The clickable screen in tasks 1 and 2 is a proposed design and is <b>not connected to a robot</b>. Its chat, which can change what IRIS sorts, is not part of the current system.</li>
-        <li>We, the study team, built IRIS. Please tell us what works, what does not, and what is missing.</li>
-        <li>We do not ask for your name or email address. We collect your answers, a generated response ID, the time you started, and how long the survey took. They are sent to a Google Sheet that only the study team can open.</li>
-        <li>Until you send them, your answers are saved in this browser so that reloading the page does not lose them. They are removed from the browser when you send them, when you choose “Stop and clear my answers”, or after 8 hours.</li>
-        <li>Taking part is voluntary; you can stop at any time. Questions: <span data-config="contact"></span>.</li>
+        <li>We do not collect your name or email address. All responses are anonymous.</li>
+        <li>Positive and negative feedback are equally welcome. Participation is voluntary, and you may stop at any time before submitting your answers.</li>
+        <li>Taking part is voluntary; you can stop at any time. Please contact Alexander Yaw at <a href="mailto:e1384328@u.nus.edu">e1384328@u.nus.edu</a> if you have any queries.</li>
+        <li>Lastly, thank you for taking the time to participate. Your insights will help us better understand current instrument-handling workflows and the challenges staff face. Your feedback will guide improvements to IRIS so that its design better reflects your needs and working environment.</li>
       </ul>
     </div>
     <label class="choice" for="consent"><input type="checkbox" id="consent" name="consent"> I have read this and agree to take part.</label>
@@ -265,10 +276,21 @@
   <!-- 2: video -->
   <section class="screen shell wide" data-screen="video" data-name="How IRIS works" hidden>
     <h2>Watch IRIS sort a tray</h2>
-    <video id="video" controls playsinline preload="metadata" poster="side-by-side-poster.jpg" width="2464" height="666">
-      <source src="side-by-side.mp4" type="video/mp4">
-    </video>
-    <div class="video-labels"><span><b>The operator's screen</b></span><span><b>The robot arm</b></span></div>
+    <div class="videos">
+      <figure class="clip">
+        <video id="video" controls playsinline preload="metadata" width="1280" height="720">
+          <source src="videos/DashboardDemoCut.mp4#t=0.1" type="video/mp4">
+        </video>
+        <figcaption>The operator's screen</figcaption>
+      </figure>
+      <figure class="clip">
+        <!-- Follows the operator's screen; it has no controls of its own and no sound. -->
+        <video id="arm" muted playsinline preload="metadata" width="1280" height="720" aria-label="The robot arm, synced to the operator's screen">
+          <source src="videos/RobotArmSorting.MOV" type="video/mp4">
+        </video>
+        <figcaption>The robot arm</figcaption>
+      </figure>
+    </div>
     <div class="measure video-steps">
       <p>In the video, the operator follows this sequence:</p>
       <ol>
@@ -277,7 +299,6 @@
         <li>The arm moves each instrument into its slot in the receiving tray, one at a time.</li>
         <li>When all are placed, the camera photographs the receiving tray. The operator checks that each instrument is labelled correctly, in the right slot.</li>
       </ol>
-      <p class="note">Most of the video plays at 1.5× speed.</p>
     </div>
     <div class="nav"><button class="btn quiet" type="button" data-back>Back</button><button class="btn primary" type="button" data-next>Next</button></div>
   </section>
@@ -288,7 +309,7 @@
     <p class="lede">In tasks 1 and 2 you will use a proposed new design of the operator's screen, opened at different moments. Do what you would do at work, then press <b>Return to questions</b>, whether or not you finished the task. Task 3 shows an example result photo to review.</p>
     <div class="card">
       <p>We are testing the design, not your performance. If you are unsure what to do or cannot complete a task, that is useful feedback.</p>
-      <p class="note">The screen works best on a computer or tablet. On a phone, turn it sideways.</p>
+      <p class="note">The screen works best on a computer or tablet. On a phone, use in landscape mode.</p>
     </div>
     <div class="nav"><button class="btn quiet" type="button" data-back>Back</button><button class="btn primary" type="button" data-next>Start task 1</button></div>
   </section>
@@ -297,6 +318,7 @@
   <template id="task-template">
     <section class="screen shell" data-screen="" data-name="" hidden>
       <h2></h2>
+      <p class="lede" data-intro hidden></p>
       <div class="task-card">
         <p class="prompt"></p>
         <button class="btn primary big" type="button" data-open>Open the screen</button>
@@ -392,7 +414,7 @@
 
 <div class="runner" id="runner" role="dialog" aria-modal="true" aria-labelledby="runner-label" aria-describedby="runner-prompt" tabindex="-1" hidden>
   <div class="runner-bar">
-    <div class="runner-text"><b id="runner-label">Task</b><p id="runner-prompt"></p></div>
+    <div class="runner-text"><b id="runner-label">Task</b><p id="runner-prompt" aria-live="polite"></p></div>
     <div class="runner-keys">
       <button class="btn quiet" type="button" id="runner-more" aria-expanded="false" aria-controls="runner-prompt">Read full task</button>
       <button class="btn quiet" type="button" id="runner-restart">Start the task again</button>
@@ -421,9 +443,11 @@
   // prototype.html#result&mislabel into review-photo.jpg and review-photo-narrow.jpg.
   // `usefulNa` is the answer, apart from the 0-10 line, for someone who cannot judge.
   const TASKS = [
-    { key: "t1", start: "idle", title: "Prepare for sorting", prompt: "You have placed a tray in the sorting area. Use the screen to prepare it for sorting. Finish when you believe sorting can begin (you do not need to start it), or when you cannot proceed.",
+    { key: "t1", start: "idle", title: "Prepare for sorting", endsOnStart: true, prompt: "You have placed a tray in the sorting area. Use the screen to prepare it for sorting. The task is complete when you start the sorting.",
       useful: "How useful would the tray check be in your work?", usefulNa: "Cannot judge, or not applicable to my work" },
-    { key: "t2", start: "ready&extra", title: "Extra instrument", prompt: "Before sorting starts, you notice an additional instrument on the input tray, a No. 3L handle, that is not listed as part of this set. Show what you would do next.",
+    { key: "t2", start: "ready&extra", title: "Extra instrument",
+      intro: "This task introduces IRIS's intelligent agent. You can talk to it in your own words to change what IRIS sorts, as you work.",
+      prompt: "Before sorting begins, you notice a No. 3L handle on the incoming tray. It was used during the operation but is not included in the standard instrument set. Show what you would do next.",
       useful: "How useful would the chat be for telling IRIS that a tray does not match the set?", usefulNa: "I did not use the chat, or cannot judge" },
     { key: "t3", photo: true, title: "Review the result", prompt: "This is a different tray from task 2. Its set has five instruments, including a No. 3L handle. Sorting has finished. This example shows how the proposed result photo and instrument labels would appear. Review it as you would before the set moves to the next stage, then answer the questions below it." },
   ];
@@ -457,7 +481,8 @@
         <label class="choice"><input type="radio" name="${t.key}_result" value="No"> No</label>
         <label class="choice"><input type="radio" name="${t.key}_result" value="Could not open or use the screen"> I could not open or use the screen (a technical problem)</label>
       </div>
-    </fieldset>
+    </fieldset>`;
+  const note = (t) => `
     <fieldset>
       <label class="q" for="${t.key}_note">What did you do, and what happened? Please describe anything that was unclear.</label>
       <textarea id="${t.key}_note" name="${t.key}_note"></textarea>
@@ -498,6 +523,25 @@
       <p class="note">A rough estimate is fine.</p>
       <div class="choices">${FREQUENCY.map((v) => `<label class="choice"><input type="radio" name="t2_frequency" value="${v}"> ${v}</label>`).join("")}</div>
     </fieldset>` + rate("t2_convenient", "How convenient would it be to type messages to IRIS at the sorting station?", "Very inconvenient", "Very convenient", "Cannot judge from this demonstration");
+  // Task 1 then asks about "Sort without it", and about a tray where one instrument is left for the operator.
+  const DISRUPTION = ["Not at all", "Slightly", "Moderately", "Very much", "Extremely", "Cannot judge", "Not applicable to my work"];
+  const leftover = () => `
+    <fieldset>
+      <label class="q" for="t1_without">What would you expect to happen after selecting “Sort without it”? Please describe what IRIS would do and what you would need to do yourself.</label>
+      <textarea id="t1_without" name="t1_without"></textarea>
+    </fieldset>
+    <div class="scenario">
+      <p>For the next questions, consider this situation:</p>
+      <p class="notice">IRIS recognises all but one instrument on a tray. You choose to continue sorting. IRIS sorts the recognised instruments and leaves the remaining instrument on the input tray for you to identify and place manually.</p>
+    </div>
+    <fieldset>
+      <legend>How much, if at all, would identifying and manually placing the remaining instrument disrupt your usual workflow?</legend>
+      <div class="choices">${DISRUPTION.map((v) => `<label class="choice"><input type="radio" name="t1_disruption" value="${v}"> ${v}</label>`).join("")}</div>
+    </fieldset>
+    <fieldset>
+      <label class="q" for="t1_disruption_note">Please explain your answer. What, if anything, would make this manual step easier? <span class="note">(optional)</span></label>
+      <textarea id="t1_disruption_note" name="t1_disruption_note"></textarea>
+    </fieldset>`;
   TASKS.forEach((t, i) => {
     const s = tpl.content.firstElementChild.cloneNode(true);
     s.dataset.screen = t.key;
@@ -505,7 +549,9 @@
     s.dataset.task = String(i);
     s.querySelector("h2").textContent = t.title;
     s.querySelector(".prompt").textContent = t.prompt;
-    s.querySelector(".followup").innerHTML = t.photo ? review(t) : completed(t) + ratings(t) + (t.key === "t2" ? mismatch() : "");
+    if (t.intro) Object.assign(s.querySelector("[data-intro]"), { textContent: t.intro, hidden: false });
+    s.querySelector(".followup").innerHTML = t.photo ? review(t) :
+      t.key === "t1" ? completed(t) + ratings(t) + leftover() : completed(t) + note(t) + ratings(t) + (t.key === "t2" ? mismatch() : "");
     if (t.photo) s.querySelector("[data-open]").outerHTML = PHOTO;
     if (i < TASKS.length - 1) s.querySelector("[data-next]").textContent = `Next: task ${i + 2}`;
     box.append(s);
@@ -533,16 +579,26 @@
   });
 
   // ---- Video ----
-  // The file is already at 1.5× speed. Its first and last 5 seconds of real time
-  // play at 2/3 of the file's rate, which is normal speed.
+  // Two real-speed recordings. The operator's screen leads; the arm waits on its 5 s frame
+  // until the screen reaches 23 s, then the two run together (arm time = screen time - 18 s).
+  // Both play at 1.5×, except the screen's first and last 5 seconds, which play at normal speed.
   const video = document.getElementById("video");
-  const EDGE = 5 / 1.5; // seconds of the file
-  const pace = () => {
+  const arm = document.getElementById("arm");
+  const SYNC_AT = 23, ARM_FROM = 5, EDGE = 5, FAST = 1.5;
+  const armTime = (t) => Math.min(Math.max(t - (SYNC_AT - ARM_FROM), ARM_FROM), arm.duration || Infinity);
+  const follow = (jump) => {
     const t = video.currentTime, end = video.duration;
-    const rate = t < EDGE || (end && t > end - EDGE) ? 2 / 3 : 1;
+    const rate = t < EDGE || (end && t > end - EDGE) ? 1 : FAST;
     if (video.playbackRate !== rate) video.playbackRate = rate;
+    if (arm.playbackRate !== rate) arm.playbackRate = rate;
+    const want = armTime(t);
+    if (jump || Math.abs(arm.currentTime - want) > 0.3) arm.currentTime = want;
+    const together = !video.paused && !video.ended && t >= SYNC_AT && want < (arm.duration || Infinity);
+    if (together && arm.paused) arm.play().catch(() => {});
+    if (!together && !arm.paused) arm.pause();
   };
-  ["loadedmetadata", "play", "seeked", "timeupdate"].forEach((e) => video.addEventListener(e, pace));
+  ["loadedmetadata", "play", "pause", "seeked", "timeupdate", "ended"].forEach((e) => video.addEventListener(e, () => follow(e === "seeked")));
+  arm.addEventListener("loadedmetadata", () => follow(true));
 
   // ---- Restore and record answers ----
   const fields = () => document.querySelectorAll("input[name], textarea[name]");
@@ -656,7 +712,8 @@
       !ticked("activities").length ? "Please choose the activities you carry out, or “None of these”." :
       ticked("activities").includes("Other") && !(answers.activities_other || "").trim() ? "Please type your other activities." :
       !answers.years ? "Please say how long you have worked in this position." : ""),
-    t1: () => taskDone("t1_result", "t1_ease", "t1_useful"),
+    t1: () => (["t1_result", "t1_ease", "t1_useful", "t1_disruption"].every((k) => answers[k]) && (answers.t1_without || "").trim() ? "" :
+      "Please answer each question about this task (only the last text box is optional)."),
     t2: () => taskDone("t2_result", "t2_ease", "t2_useful", "t2_frequency", "t2_convenient"),
     t3: () => ((answers.t3_review || "").trim() && answers.t3_assess && answers.t3_confidence ? "" : "Please answer each question about the photo."),
     rating: () => (answers.umux_capabilities && answers.umux_easy ? "" : "Please answer both statements."),
@@ -690,12 +747,17 @@
   const frameBox = document.getElementById("runner-frame");
   const runnerText = runner.querySelector(".runner-text");
   const more = document.getElementById("runner-more");
-  let current = null;
+  let current = null, nudgeTimer = 0;
+  const runnerPrompt = document.getElementById("runner-prompt");
+  const runnerDone = document.getElementById("runner-done");
+  const stopNudge = () => { clearTimeout(nudgeTimer); runnerDone.classList.remove("nudge"); };
   function load(t) {
+    runnerPrompt.textContent = t.prompt;
+    stopNudge();
     frameBox.innerHTML = "";
     const f = document.createElement("iframe");
     f.title = "Proposed IRIS operator screen";
-    f.src = `prototype.html#${t.start}&clean`;
+    f.src = `prototype.html#${t.start}${t.endsOnStart ? "&endstart" : ""}&clean`;
     // The prototype has no use for Escape, so Escape inside it also returns to the questions.
     f.addEventListener("load", () => {
       try { f.contentWindow.addEventListener("keydown", (e) => { if (e.key === "Escape") closeTask(); }); } catch (e) {}
@@ -710,7 +772,6 @@
   function openTask(i) {
     current = TASKS[i];
     document.getElementById("runner-label").textContent = `Task ${i + 1} of ${TASKS.length}: ${current.title}`;
-    document.getElementById("runner-prompt").textContent = current.prompt;
     setMore(false);
     load(current);
     runner.hidden = false;
@@ -720,6 +781,7 @@
   }
   function closeTask() {
     if (!current) return;
+    stopNudge();
     answers[`${current.key}_opened`] = true;
     save();
     runner.hidden = true; frameBox.innerHTML = "";
@@ -736,12 +798,21 @@
   more.addEventListener("click", () => setMore(!runnerText.classList.contains("open")));
   document.getElementById("runner-restart").addEventListener("click", () => current && load(current));
   document.getElementById("runner-done").addEventListener("click", closeTask);
+  // A task with `endsOnStart` ends when the prototype reports Start sorting: the prototype celebrates and freezes,
+  // and the bar says the task is complete; the participant returns with "Return to questions".
+  window.addEventListener("message", (e) => {
+    if (e.origin !== location.origin || e.data?.iris !== "start-sorting" || !current?.endsOnStart) return;
+    runnerPrompt.textContent = "Task complete: you started sorting. Press Return to questions to continue, or Start the task again to try it once more.";
+    runnerDone.focus();
+    // Let the celebration in the prototype finish (about a second) before the button starts to hop.
+    nudgeTimer = setTimeout(() => runnerDone.classList.add("nudge"), 1200);
+  });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !runner.hidden) closeTask(); });
 
   // ---- Sending ----
   // Keep in step with FIELDS in apps-script.gs.
   const FIELDS = ["response_id", "started_at", "minutes_taken", "position", "position_other", "activities", "activities_other", "years",
-    "t1_result", "t1_note", "t1_ease", "t1_useful",
+    "t1_result", "t1_ease", "t1_useful", "t1_without", "t1_disruption", "t1_disruption_note",
     "t2_result", "t2_note", "t2_ease", "t2_useful", "t2_frequency", "t2_convenient",
     "t3_review", "t3_assess", "t3_confidence",
     "umux_capabilities", "umux_easy", "t3_improve", "stage", "influence", "other"];

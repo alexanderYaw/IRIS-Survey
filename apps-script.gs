@@ -8,7 +8,7 @@
 const SHEET_NAME = "Responses v4";
 // Column order; the page sends these keys (keep in step with FIELDS in index.html). "received_at" is added here.
 const FIELDS = ["response_id", "started_at", "minutes_taken", "position", "position_other", "activities", "activities_other", "years",
-  "t1_result", "t1_note", "t1_ease", "t1_useful",
+  "t1_result", "t1_ease", "t1_useful", "t1_without", "t1_disruption", "t1_disruption_note",
   "t2_result", "t2_note", "t2_ease", "t2_useful", "t2_frequency", "t2_convenient",
   "t3_review", "t3_assess", "t3_confidence",
   "umux_capabilities", "umux_easy", "t3_improve", "stage", "influence", "other"];

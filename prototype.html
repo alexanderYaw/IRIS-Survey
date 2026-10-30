@@ -195,11 +195,19 @@
   .chat h2 { margin: 0; font-size: 19px; }
   .chat .hint { margin: 4px 0 10px; font-size: 15px; color: var(--ink-2); }
   .log { flex: 1; min-height: 80px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 2px; overscroll-behavior: contain; }
-  .msg { overflow-wrap: anywhere; margin: 0; font-size: 16px; }
+  .msg { overflow-wrap: anywhere; white-space: pre-line; margin: 0; font-size: 16px; }
   .msg b { display: block; font-size: 13px; font-weight: 600; color: var(--ink-2); }
   .msg.nurse { align-self: flex-end; max-width: 88%; background: #e2ded5; padding: 8px 12px; border-radius: 7px; }
   .send { display: flex; gap: 8px; margin-top: 12px; }
-  .send input { flex: 1; min-width: 0; height: 50px; padding: 0 12px; border: 2px solid #8d877b; border-radius: 6px; background: #fff; }
+  /* Study task 2: on opening, the chat is outlined in yellow ("needs you") and a tip introduces IRIS's agent, until the operator uses it or dismisses the tip. */
+  .chat.coach { box-shadow: inset 0 0 0 3px var(--yellow); }
+  .chat.coach .send textarea { border-color: var(--yellow); }
+  .coach-tip { margin: 0 0 12px; padding: 12px 14px; display: grid; gap: 10px; justify-items: start; border-radius: 8px; background: var(--yellow-bg); color: var(--yellow-ink); font-size: 15px; line-height: 1.4; }
+  .coach-tip p { margin: 0; }
+  .coach-tip .k { min-height: 40px; padding: 0 14px; font-size: 15px; }
+  .send { align-items: flex-end; }
+  /* The message box grows with what is typed, up to about five lines, then scrolls. */
+  .send textarea { flex: 1; min-width: 0; height: 50px; min-height: 50px; max-height: 140px; padding: 12px; border: 2px solid #8d877b; border-radius: 6px; background: #fff; font: inherit; line-height: 1.35; resize: none; overflow-y: hidden; }
 
   .demo { position: fixed; left: 12px; bottom: 12px; max-width: calc(100vw - 24px); display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 6px 8px; border: 1px dashed #7a756b; border-radius: 6px; background: rgba(255,255,255,0.97); font-size: 13px; z-index: 5; }
   .demo button { min-height: 32px; padding: 0 9px; border: 1px solid #bdb7ab; border-radius: 4px; background: #fff; cursor: pointer; font-size: 13px; }
@@ -218,7 +226,15 @@
     .tally li { padding-left: 0; border-left: 0; }
     .shot { width: 100%; }
   }
-  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+  /* Study task 1 ends at Start sorting: rings and sparks burst from the button once; everything else greys out. */
+  .k.celebrate { position: relative; cursor: default; box-shadow: 0 0 0 4px var(--mint), 0 4px 0 var(--green-edge); }
+  .k.celebrate::before, .k.celebrate::after { content: ""; position: absolute; inset: -4px; border: 3px solid var(--lamp-green); border-radius: 12px; opacity: 0; pointer-events: none; animation: ring 1.1s cubic-bezier(0.2, 0.7, 0.3, 1) forwards; }
+  .k.celebrate::after { animation-delay: 0.25s; }
+  @keyframes ring { 0% { opacity: 0.9; transform: scale(1); } 100% { opacity: 0; transform: scale(1.12, 1.7); } }
+  .spark { position: absolute; left: 50%; top: 50%; width: 9px; height: 9px; margin: -4.5px; border-radius: 50%; background: var(--c); opacity: 0; pointer-events: none; animation: spark 0.95s cubic-bezier(0.15, 0.8, 0.3, 1) var(--w) forwards; }
+  @keyframes spark { 0% { opacity: 1; transform: rotate(var(--a)) translateY(0) scale(1); } 100% { opacity: 0; transform: rotate(var(--a)) translateY(calc(-1 * var(--d))) scale(0.4); } }
+  .finished button:disabled:not(.celebrate) { filter: grayscale(1); opacity: 0.5; cursor: default; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } .spark { display: none; } }
 </style>
 </head>
 <body>
@@ -309,10 +325,14 @@
       <section class="sect chat" data-when="moving detecting missing ordering ready" aria-labelledby="chat-title">
         <h2 id="chat-title">Tell IRIS about this tray</h2>
         <p class="hint">Tell IRIS if the tray does not match the list. After IRIS answers, the list shows what will be sorted.</p>
+        <div class="coach-tip" data-bind="coach" role="note" hidden>
+          <p><b>Tip:</b> IRIS has an intelligent agent that understands changes to the sorting procedure. You can talk to it here in your own words.</p>
+          <button type="button" class="k" data-coach-ok>Got it</button>
+        </div>
         <div class="log" data-bind="log" role="log" aria-live="polite" tabindex="0" aria-label="Conversation with IRIS"></div>
         <form class="send" data-action="send">
           <label class="sr" for="msg">Message to IRIS</label>
-          <input id="msg" name="msg" type="text" autocomplete="off" placeholder="Type a message...">
+          <textarea id="msg" name="msg" rows="1" autocomplete="off" placeholder="Type a message..."></textarea>
           <button type="submit" class="k ink" data-bind="sendKey">Send</button>
         </form>
         <p class="note" data-bind="sendNote" hidden>Send: Wait for the tray check to finish.</p>
@@ -361,6 +381,8 @@
   // set ("sort it") or keeps it out ("do not sort it"); kept out, the result
   // shows a photo of the tray without it (PHOTO_WITHOUT_LARGE).
   const EXTRA = location.hash.slice(1).split("&").includes("extra");
+  // Study task 1 ("&endstart"): pressing Start sorting ends the task. The button celebrates and the screen freezes.
+  const END_AT_START = location.hash.slice(1).split("&").includes("endstart");
   // Study task 4 ("&mislabel"): the result photo's cards for slots 2 and 4 carry
   // each other's names on purpose, to see whether people notice and what they do.
   const MISLABEL = location.hash.slice(1).split("&").includes("mislabel");
@@ -578,6 +600,7 @@
   }
 
   function render() {
+    if (state.finished) return;
     const { phase } = state;
     const { placed, total } = counts();
     app.dataset.phase = phase;
@@ -715,6 +738,19 @@
     toastTimer = setTimeout(() => el.remove(), 3200);
   }
 
+  // Study task 1: the Start sorting press is the end of the task. Mark it, burst, and freeze the rest of the screen.
+  function finishAtStart(button) {
+    state.finished = true;
+    clearTimer();
+    button.classList.add("celebrate");
+    button.setAttribute("aria-disabled", "true");
+    const COLOURS = ["var(--lamp-green)", "var(--yellow)", "var(--teal)", "var(--green)"];
+    const sparks = Array.from({ length: 14 }, (_, i) =>
+      `<span class="spark" aria-hidden="true" style="--a:${Math.round(i * 360 / 14 + (i % 2 ? 9 : -9))}deg;--d:${110 + (i % 3) * 45}px;--w:${(i % 4) * 40}ms;--c:${COLOURS[i % COLOURS.length]}"></span>`).join("");
+    button.innerHTML = `Sorting started${sparks}`;
+    app.classList.add("finished");
+    app.querySelectorAll("button, input, textarea, select").forEach((el) => { if (el !== button) el.disabled = true; });
+  }
   app.addEventListener("click", (event) => {
     const button = event.target.closest("button");
     if (!button || button.disabled) return;
@@ -729,6 +765,10 @@
     else if (action === "without") {
       // Only records that the operator has read it: the robot leaves it on the tray.
       state.excluded = true; state.phase = "ready"; refocus = '[data-action="start"]'; render();
+    } else if (action === "start" && END_AT_START) {
+      finishAtStart(button);
+      // Study page: tell the survey that sorting was started, which ends task 1.
+      if (window.parent !== window) window.parent.postMessage({ iris: "start-sorting" }, location.origin);
     } else if (action === "start") {
       state.phase = "sorting"; state.placed = 0; state.step = 0; refocus = '[data-action="pause"]'; render(); later(STEP_MS, tick);
     } else if (action === "pause") {
@@ -737,6 +777,17 @@
     } else if (action === "retry") { refocus = '[data-bind="captureTitle"]'; capture(); }
   });
   bind("failNext").addEventListener("change", (event) => { state.failNext = event.target.checked; });
+  // The message box wraps and grows as the operator types; Enter sends, Shift+Enter starts a new line.
+  const msgBox = $("#msg");
+  const grow = () => {
+    msgBox.style.height = "auto";
+    msgBox.style.height = `${Math.min(msgBox.scrollHeight + 4, 140)}px`;
+    msgBox.style.overflowY = msgBox.scrollHeight + 4 > 140 ? "auto" : "hidden";
+  };
+  msgBox.addEventListener("input", grow);
+  msgBox.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && !event.shiftKey && !event.isComposing) { event.preventDefault(); msgBox.form.requestSubmit(); }
+  });
   $('[data-action="send"]').addEventListener("submit", (event) => {
     event.preventDefault();
     const input = event.target.elements.msg;
@@ -744,6 +795,7 @@
     if (!text || bind("sendKey").disabled) return;
     state.log.push({ from: "nurse", text });
     input.value = "";
+    grow();
     render();
     setTimeout(() => {
       // The chat closes at Start sorting; a reply that arrives later changes nothing.
@@ -886,6 +938,17 @@
   const hold = flags.find((f) => f.startsWith("hold="));
   if (hashPhase === "detecting" && hold) { jump("detecting", 0); clearTimer(); state.found = Number(hold.slice(5)); render(); }
   else jump(PHASES.includes(hashPhase) ? (hashPhase === "moving" ? "detecting" : hashPhase) : "idle");
+
+  // Study task 2 ("&extra"): point out the chat when the screen opens; typing, sending or "Got it" ends the tip.
+  if (EXTRA) {
+    const chat = $(".chat"), tip = bind("coach"), msg = $("#msg");
+    const endCoach = () => { chat.classList.remove("coach"); tip.hidden = true; };
+    chat.classList.add("coach");
+    tip.hidden = false;
+    tip.querySelector("[data-coach-ok]").addEventListener("click", () => { endCoach(); msg.focus(); });
+    msg.addEventListener("input", endCoach, { once: true });
+    $('[data-action="send"]').addEventListener("submit", endCoach, { once: true });
+  }
 })();
 </script>
 </body>

@@ -14,7 +14,8 @@ Google Sheet; the page does not ask for a name or email address.
 | --- | --- |
 | `index.html` | The survey page |
 | `prototype.html` | The clickable operator screen (`design-demos/dir-2.html` from the IRIS repo, with a study version of the chat; see "Task 2" below) |
-| `side-by-side.mp4`, `side-by-side-poster.jpg` | The video: operator screen and robot arm, 1.5× speed, no sound (the page plays its first and last 5 seconds at normal speed) |
+| `videos/DashboardDemoCut.mp4`, `videos/RobotArmSorting.MOV` | The two videos, shown side by side: the operator's screen and the robot arm, both recorded at real speed. The page keeps them in sync (the arm waits on its 5 s frame until the screen reaches 23 s, then arm time = screen time − 18 s) and plays both at 1.5×, except the screen's first and last 5 seconds. The arm is muted. |
+| `side-by-side.mp4`, `side-by-side-poster.jpg` | The previous combined video; no longer used by the page |
 | `review-photo.jpg`, `review-photo-narrow.jpg` | Task 3's labelled result photo (wide, and the phone layout), rendered from `prototype.html#result&mislabel&clean` |
 | `apps-script.gs` | Receives answers and writes them to the sheet |
 
@@ -153,9 +154,12 @@ What the less obvious columns hold:
 | `activities` | "Which instrument-processing activities do you currently carry out?" The ticked answers, separated by "; ": Receiving and checking instruments before washing / Cleaning instruments / Inspecting instruments after washing / Assembling and checking instrument sets / Packing sets for sterilisation / None of these / Other (typed in `activities_other`) |
 | `years` | Less than 1 year / 1 to less than 6 years / 6 to 10 years / More than 10 years |
 | `t1_result`, `t2_result` | "Were you able to complete this task?": Yes / Partly / No / Could not open or use the screen (a technical problem) |
-| `t1_note`, `t2_note` | "What did you do, and what happened? Please describe anything that was unclear." |
+| `t2_note` | "What did you do, and what happened? Please describe anything that was unclear." (task 2 only) |
 | `t1_ease`, `t2_ease` | "How easy or difficult was this task?" 0 (very difficult) to 10 (very easy) |
 | `t1_useful`, `t2_useful` | How useful the function would be in their work, 0 (not useful at all) to 10 (very useful): the tray check, the chat. Or the text "Cannot judge, or not applicable to my work" (t1), "I did not use the chat, or cannot judge" (t2) |
+| `t1_without` | "What would you expect to happen after selecting “Sort without it”? Please describe what IRIS would do and what you would need to do yourself." (text) |
+| `t1_disruption` | For a tray where IRIS sorts all but one instrument and leaves it on the input tray: "How much, if at all, would identifying and manually placing the remaining instrument disrupt your usual workflow?" Not at all / Slightly / Moderately / Very much / Extremely / Cannot judge / Not applicable to my work |
+| `t1_disruption_note` | "Please explain your answer. What, if anything, would make this manual step easier?" (optional text) |
 | `t2_frequency` | "In your usual work, approximately how often does a tray contain at least one unexpected instrument or have an expected instrument missing?": Never / Less than 1 in 100 trays / About 1–4 in 100 trays / About 5–9 in 100 trays / About 10 or more in 100 trays / I do not handle or check these trays / Not sure |
 | `t2_convenient` | How convenient typing to IRIS at the sorting station would be, 0 (very inconvenient) to 10 (very convenient), or "Cannot judge from this demonstration" |
 | `t3_review` | "What did you notice, and what would you do next with this set?" (text), given before they are told that the labels for slots 2 and 4 were swapped on purpose; see "Task 3" |

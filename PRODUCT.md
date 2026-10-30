@@ -20,23 +20,23 @@ The answers serve both an academic write-up and decisions about what to change i
 
 ## Positioning
 
-The study is run by the team that built IRIS, and it says so: problems participants find are framed as the most useful answers. It tests a proposed operator screen with the people who would use it, at four real moments of the job (tray arrival, an extra instrument, a near collision, the final sterilisation decision), rather than asking for general opinions about automation.
+The study is run by the team that built IRIS. The welcome screen does not say so (the study team removed that line); it tells participants the design is being evaluated, not their performance, and that positive and negative feedback are equally welcome. It tests a proposed operator screen with the people who would use it, at four real moments of the job (tray arrival, an extra instrument, a near collision, the final sterilisation decision), rather than asking for general opinions about automation.
 
 ## Operating Context
 
 - Distributed as a public GitHub Pages link, asking search engines not to list it.
 - Answers go to a Google Sheet through a Google Apps Script web app (`apps-script.gs`); `CONFIG` at the top of the `index.html` script holds the web app URL and the contact.
-- Answers are kept in the participant's browser (localStorage) until sent, so a reload does not lose them; duplicate sends are stored once.
-- Each task opens `prototype.html` at a set state in a full-screen dialog with the task prompt, "Start the task again" and "Done".
+- Answers are kept in the participant's browser (localStorage) until sent, cleared by the participant, or 8 hours old, so a reload does not lose them; duplicate sends are stored once. Hospital computers may be shared: unfinished answers are never resumed without the welcome screen and a fresh consent.
+- Each task opens `prototype.html` at a set state in a full-screen dialog with the task prompt, "Start the task again" and "Return to questions".
 - The prototype works best on a computer or tablet; on a phone participants are asked to turn it sideways.
 
 ## Capabilities and Constraints
 
 - Static site: plain HTML, CSS and JavaScript, no build step, everything in the repository root is published.
-- `prototype.html` is frozen study material (copied from `design-demos/dir-2.html` in the IRIS repo, with its chat reply changed for the study). Design work on this site does not restyle or change it; only the survey page (`index.html`) is open to design work.
-- The video and its poster (`side-by-side.mp4`, `side-by-side-poster.jpg`) are fixed study material: the file is at 1.5× speed, and the page plays its first and last 5 seconds of real time at normal speed; no sound, operator screen and arm from separate runs.
+- `prototype.html` is the study's adapted copy of `design-demos/dir-2.html` from the IRIS repo. Study changes so far: task 2's extra-instrument mode (`#ready&extra`), revised chat replies, the two scalpel handles named "No. 3 handle" and "No. 3L handle", "Look again" as the highlighted action when an instrument is not found, and, in task 2, a yellow outline on the chat with a tip that IRIS has an intelligent agent that understands changes to the sorting procedure (gone once the participant types, sends or presses "Got it"). It is what participants test, so it changes only when the study team asks for a specific change; design work on the survey page never restyles it as a side effect.
+- The videos (`videos/DashboardDemoCut.mp4`, the operator's screen; `videos/RobotArmSorting.MOV`, the robot arm) are study material, both recorded at real speed. The page plays them side by side and in sync: the arm waits on its 5 s frame until the screen reaches 23 s, then runs 18 s behind it; both play at 1.5×, except the screen's first and last 5 seconds. The arm is muted. Together they are about 49 MB, heavy on mobile data.
 - Question wording, answer options, task prompts and the UMUX-Lite statements are study instruments. Changing them changes the data; treat any wording change as a study decision for the team, not a copy edit.
-- Stored per participant: arrival time, random response ID, position, years in position, answers, minutes taken. No name, email, IP address or device details. This privacy promise is made on the consent screen and must stay true.
+- Stored per participant: arrival time, random response ID, position, years in position, answers, minutes taken. No name, email, IP address or device details. The consent screen says only that names and email addresses are not collected and that responses are anonymous, explains that unsent answers stay in the browser for up to 8 hours, and states the time needed, that the design (not the participant) is being evaluated, that taking part is voluntary, and the contact. Whether consent must list the stored data in full is the study team's decision under their ethics approval.
 - Terminology: IRIS, CSSD, sterile processing, set tray, sterilisation (British spelling), operator's screen.
 
 ## Brand Commitments
@@ -46,7 +46,7 @@ The study is run by the team that built IRIS, and it says so: problems participa
 
 ## Evidence on Hand
 
-- The side-by-side video and poster frame.
+- The operator-screen and robot-arm videos in `videos/`.
 - The clickable prototype.
 - No results, participant counts, quotes, or endorsements exist yet. Do not invent any, and do not imply hospital or NUS endorsement beyond the named contact.
 
@@ -55,7 +55,7 @@ The study is run by the team that built IRIS, and it says so: problems participa
 1. Protect the data: never change what a question asks or how it is answered as a side effect of design work.
 2. Keep the participant moving: every screen should be quick to understand for a busy CSSD worker on a hospital PC or a phone, so they finish.
 3. Make honesty easy: the page invites criticism of IRIS and should never feel like a sales pitch for it.
-4. Keep the privacy promise exact: collect only what the consent screen says.
+4. Collect nothing beyond the stored list above: no name, email, IP address or device details.
 
 ## Accessibility & Inclusion
 

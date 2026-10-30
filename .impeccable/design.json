@@ -1,0 +1,323 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-29T18:54:37.696761+00:00",
+  "title": "Design System: IRIS sorting study",
+  "extensions": {
+    "colorMeta": {
+      "scrub-green": {
+        "role": "primary",
+        "displayName": "Scrub Green",
+        "canonical": "#1e6a56",
+        "tonalRamp": [
+          "#030e0a",
+          "#0e2b23",
+          "#1e4c3e",
+          "#2f6e5c",
+          "#52917d",
+          "#82b1a1",
+          "#b1d2c6",
+          "#e1f4ed"
+        ]
+      },
+      "scrub-tint": {
+        "role": "primary",
+        "displayName": "Scrub Tint",
+        "canonical": "#e1eee8",
+        "tonalRamp": [
+          "#090c0b",
+          "#222624",
+          "#3d4441",
+          "#5a645f",
+          "#7b8580",
+          "#9fa7a3",
+          "#c5cbc8",
+          "#ecefee"
+        ]
+      },
+      "clinic-mist": {
+        "role": "neutral",
+        "displayName": "Clinic Mist",
+        "canonical": "#f5f7f5",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#242524",
+          "#414241",
+          "#606260",
+          "#818381",
+          "#a4a5a4",
+          "#c8c9c8",
+          "#eeeeee"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Surface",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#a5a5a5",
+          "#c9c9c9",
+          "#eeeeee"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#16201c",
+        "tonalRamp": [
+          "#090c0b",
+          "#222624",
+          "#3c4441",
+          "#5a6460",
+          "#7a8581",
+          "#9fa7a4",
+          "#c4cbc8",
+          "#ecefee"
+        ]
+      },
+      "ink-muted": {
+        "role": "neutral",
+        "displayName": "Muted Ink",
+        "canonical": "#4b5752",
+        "tonalRamp": [
+          "#090c0b",
+          "#212624",
+          "#3c4441",
+          "#596460",
+          "#7a8581",
+          "#9ea7a4",
+          "#c4cbc8",
+          "#ecefee"
+        ]
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "#d6ddd9",
+        "tonalRamp": [
+          "#0a0b0b",
+          "#232624",
+          "#3f4341",
+          "#5d6360",
+          "#7e8481",
+          "#a2a6a4",
+          "#c7cac8",
+          "#edefee"
+        ]
+      },
+      "field-line": {
+        "role": "neutral",
+        "displayName": "Field Line",
+        "canonical": "#7f8a85",
+        "tonalRamp": [
+          "#0a0c0b",
+          "#222624",
+          "#3d4441",
+          "#5a6460",
+          "#7b8581",
+          "#9fa7a4",
+          "#c5cbc8",
+          "#ecefee"
+        ]
+      },
+      "rust-alert": {
+        "role": "error",
+        "displayName": "Rust Alert",
+        "canonical": "#8a3b12",
+        "tonalRamp": [
+          "#160602",
+          "#3b1b0c",
+          "#65321a",
+          "#924a2a",
+          "#b76c4b",
+          "#d1957b",
+          "#eabeab",
+          "#ffe8dd"
+        ]
+      },
+      "prototype-backdrop": {
+        "role": "neutral",
+        "displayName": "Prototype Backdrop",
+        "canonical": "#e4e1da",
+        "tonalRamp": [
+          "#0c0b0a",
+          "#262522",
+          "#43423e",
+          "#63615c",
+          "#84827c",
+          "#a7a5a0",
+          "#cac9c6",
+          "#efeeec"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "h1 on the welcome, thank-you and cleared screens."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Each screen's h2, including task titles."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Every question."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Answers, card text, input."
+      },
+      "lede": {
+        "displayName": "Lede",
+        "purpose": "Opening sentence under a heading."
+      },
+      "prompt": {
+        "displayName": "Prompt",
+        "purpose": "The task instruction."
+      },
+      "note": {
+        "displayName": "Note",
+        "purpose": "Hints, (optional), the stop line."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Uppercase step name and task label only."
+      },
+      "button": {
+        "displayName": "Button",
+        "purpose": "Button text."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "progress-fill",
+        "value": "width 0.25s ease",
+        "purpose": "The progress bar fill; off under reduced motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "phone",
+        "value": "560px"
+      },
+      {
+        "name": "upright-phone-task",
+        "value": "portrait and max-width 700px"
+      },
+      {
+        "name": "short-task",
+        "value": "max-height 500px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one next action on a screen: Next, Start, Return to questions.",
+      "html": "<button class=\"ds-btn-primary\">Next</button>",
+      "css": ".ds-btn-primary { display:inline-flex; align-items:center; justify-content:center; min-height:52px; padding:0 22px; border:0; border-radius:10px; background:var(--accent, #1e6a56); color:var(--accent-ink, #ffffff); font:600 17px/1 Archivo, system-ui, sans-serif; cursor:pointer; } .ds-btn-primary:focus-visible { outline:3px solid var(--accent, #1e6a56); outline-offset:3px; } .ds-btn-primary:disabled { opacity:0.5; cursor:not-allowed; }"
+    },
+    {
+      "name": "Quiet Button",
+      "kind": "button",
+      "refersTo": "button-quiet",
+      "description": "Back, Start again, Open the screen again: everything that is not the next step.",
+      "html": "<button class=\"ds-btn-quiet\">Back</button>",
+      "css": ".ds-btn-quiet { display:inline-flex; align-items:center; justify-content:center; min-height:52px; padding:0 22px; border:0; border-radius:10px; background:transparent; color:var(--ink, #16201c); box-shadow:inset 0 0 0 1.5px var(--line, #d6ddd9); font:600 17px/1 Archivo, system-ui, sans-serif; cursor:pointer; } .ds-btn-quiet:focus-visible { outline:3px solid var(--accent, #1e6a56); outline-offset:3px; }"
+    },
+    {
+      "name": "Answer Tile",
+      "kind": "custom",
+      "refersTo": "answer-tile",
+      "description": "A whole-tile radio answer; selected tiles take the Scrub Green border on Scrub Tint.",
+      "html": "<div class=\"ds-tiles\"><label class=\"ds-tile\"><input type=\"radio\" name=\"ds-a\" checked> Partly</label><label class=\"ds-tile\"><input type=\"radio\" name=\"ds-a\"> No</label></div>",
+      "css": ".ds-tiles { display:grid; gap:8px; font:400 18px/1.55 'Atkinson Hyperlegible', system-ui, sans-serif; color:var(--ink, #16201c); } .ds-tile { display:flex; align-items:center; gap:12px; min-height:52px; padding:10px 14px; border:1.5px solid var(--line, #d6ddd9); border-radius:10px; background:var(--surface, #ffffff); cursor:pointer; } .ds-tile:has(input:checked) { border-color:var(--accent, #1e6a56); background:var(--accent-soft, #e1eee8); } .ds-tile input { width:20px; height:20px; margin:0; accent-color:var(--accent, #1e6a56); } .ds-tile:has(input:focus-visible) { outline:3px solid var(--accent, #1e6a56); outline-offset:3px; }"
+    },
+    {
+      "name": "Text Box",
+      "kind": "input",
+      "refersTo": "text-box",
+      "description": "Open answers; Field Line border so an empty box is visible.",
+      "html": "<label class=\"ds-q\" for=\"ds-t\">What did you do, and what happened?</label><textarea id=\"ds-t\" class=\"ds-textbox\"></textarea>",
+      "css": ".ds-q { display:block; margin-bottom:10px; font:600 19px/1.35 Archivo, system-ui, sans-serif; color:var(--ink, #16201c); } .ds-textbox { width:100%; min-height:88px; padding:12px 14px; border:1.5px solid var(--field-line, #7f8a85); border-radius:10px; background:var(--surface, #ffffff); color:var(--ink, #16201c); font:400 18px/1.55 'Atkinson Hyperlegible', system-ui, sans-serif; resize:vertical; } .ds-textbox:focus-visible { outline:3px solid var(--accent, #1e6a56); outline-offset:3px; }"
+    },
+    {
+      "name": "Task Card",
+      "kind": "card",
+      "refersTo": "task-card",
+      "description": "The task prompt and its Open button on Scrub Tint.",
+      "html": "<div class=\"ds-task\"><p>Before sorting starts, you notice an additional instrument on the input tray. Show what you would do next.</p><button class=\"ds-task-btn\">Open the screen</button></div>",
+      "css": ".ds-task { display:grid; gap:14px; justify-items:start; padding:18px 20px; border-radius:12px; background:var(--accent-soft, #e1eee8); color:var(--ink, #16201c); } .ds-task p { margin:0; font:700 21px/1.35 'Atkinson Hyperlegible', system-ui, sans-serif; } .ds-task-btn { min-height:60px; padding:0 22px; border:0; border-radius:10px; background:var(--accent, #1e6a56); color:var(--accent-ink, #ffffff); font:600 19px/1 Archivo, system-ui, sans-serif; cursor:pointer; }"
+    },
+    {
+      "name": "Info Card",
+      "kind": "card",
+      "refersTo": "info-card",
+      "description": "White card with a hairline border: consent bullets, tasks intro.",
+      "html": "<div class=\"ds-card\"><ul><li>Estimated time: <b>about 10 minutes</b>.</li><li>The clickable screen is <b>not connected to a robot</b>.</li></ul></div>",
+      "css": ".ds-card { padding:18px 20px; border:1px solid var(--line, #d6ddd9); border-radius:12px; background:var(--surface, #ffffff); color:var(--ink, #16201c); font:400 18px/1.55 'Atkinson Hyperlegible', system-ui, sans-serif; } .ds-card ul { margin:0; padding-left:20px; display:grid; gap:6px; }"
+    },
+    {
+      "name": "Progress Header",
+      "kind": "nav",
+      "refersTo": "progress-bar",
+      "description": "Step name, step count and a 6px bar that fills by steps finished.",
+      "html": "<div class=\"ds-progress\"><div class=\"ds-progress-row\"><b>Task 1 of 4</b><span>Step 4 of 9</span></div><div class=\"ds-bar\"><i style=\"width:33%\"></i></div></div>",
+      "css": ".ds-progress { display:grid; gap:8px; } .ds-progress-row { display:flex; justify-content:space-between; font:400 15px/1.55 'Atkinson Hyperlegible', system-ui, sans-serif; color:var(--ink-2, #4b5752); } .ds-progress-row b { font:600 13px/1.55 Archivo, system-ui, sans-serif; letter-spacing:0.04em; text-transform:uppercase; color:var(--accent, #1e6a56); } .ds-bar { height:6px; border-radius:3px; background:var(--line, #d6ddd9); overflow:hidden; } .ds-bar i { display:block; height:100%; background:var(--accent, #1e6a56); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Quiet Interview",
+    "overview": "The page is a respectful conversation with people who know instrument sets better than its authors do. It asks one thing at a time, explains exactly what happens to the answers, and invites criticism without ever selling IRIS. Nothing on screen competes with the question being asked: one green carries every next step, and everything else is ink on a pale, near-white ground.\n\nDensity is comfortable and generous, never cramped: participants may be on a shared hospital PC in a short break or on their own phone, so targets are large (52px and up), text is set in a face built for legibility, and each screen is a single column that reads top to bottom. The controls are sturdy and plain: flat surfaces, clear borders, no decoration.",
+    "keyCharacteristics": [
+      "One accent, Scrub Green, used only for the next action, progress and selection.",
+      "Flat throughout: no shadows; separation comes from borders and tinted surfaces.",
+      "Archivo for headings, questions and buttons; Atkinson Hyperlegible for everything people read.",
+      "Big, square-ish rounded targets (10px corners, 52px minimum height).",
+      "Light and dark themes from the same roles."
+    ],
+    "rules": [
+      {
+        "name": "The One Green Rule",
+        "body": "Scrub Green marks only the next action, progress and the current selection. A second green button on the same screen means one of them should be quiet.",
+        "section": "colors"
+      },
+      {
+        "name": "The Prototype Is Not Ours Rule",
+        "body": "The embedded operator screen keeps its own colors. The study's chrome around it never borrows them, and never restyles the prototype.",
+        "section": "colors"
+      },
+      {
+        "name": "The Readable Floor Rule",
+        "body": "Nothing anyone needs to read is smaller than 15px; inputs stay at 18px so phones do not zoom in.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Form Rule",
+        "body": "Separate with a border or a tint, never a shadow. The prototype's own raised controls are its business.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** keep one Scrub Green action per screen state; make every other button quiet.",
+      "**Do** keep controls at least 52px tall (44px for the text link) and text at 15px or larger.",
+      "**Do** separate with Hairline borders and Scrub Tint, not shadows.",
+      "**Do** use Field Line, not Hairline, for text-box borders.",
+      "**Do** define every new color as a role on `:root` with a dark-mode value."
+    ],
+    "donts": [
+      "**Don't** add shadows, gradients or decoration to study controls.",
+      "**Don't** restyle or recolor the embedded prototype.",
+      "**Don't** use the uppercase label style above a heading; it is reserved for the progress header and the task bar.",
+      "**Don't** let the page read like marketing for IRIS: no hero imagery, badges or promotional color."
+    ]
+  }
+}
