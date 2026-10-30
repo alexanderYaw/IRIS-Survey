@@ -200,8 +200,15 @@
   .msg.nurse { align-self: flex-end; max-width: 88%; background: #e2ded5; padding: 8px 12px; border-radius: 7px; }
   .send { display: flex; gap: 8px; margin-top: 12px; }
   /* Study task 2: on opening, the chat is outlined in yellow ("needs you") and a tip introduces IRIS's agent, until the operator uses it or dismisses the tip. */
-  .chat.coach { box-shadow: inset 0 0 0 3px var(--yellow); }
-  .chat.coach .send textarea { border-color: var(--yellow); }
+  .chat.coach { --gold: #d4a017; position: relative; box-shadow: inset 0 0 0 3px var(--gold); animation: coach-glow 2.6s ease-in-out infinite; }
+  @keyframes coach-glow {
+    0%, 100% { box-shadow: inset 0 0 0 3px var(--gold), inset 0 0 14px rgba(232, 172, 20, 0.18); }
+    50% { box-shadow: inset 0 0 0 3px var(--gold), inset 0 0 28px rgba(240, 186, 40, 0.4); }
+  }
+  /* Small gold motes drift off the outline and fade, staggered so a few show at a time. */
+  .mote { position: absolute; left: var(--x); top: var(--y); width: var(--s); height: var(--s); margin: calc(var(--s) / -2); border-radius: 50%; background: var(--c); box-shadow: 0 0 6px rgba(240, 186, 40, 0.7); opacity: 0; pointer-events: none; animation: mote 3.2s ease-out var(--w) infinite; }
+  @keyframes mote { 0% { opacity: 0; transform: translate(0, 0) scale(0.6); } 20% { opacity: 0.85; } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(1); } }
+  .chat.coach .send textarea { border-color: var(--gold); }
   .coach-tip { margin: 0 0 12px; padding: 12px 14px; display: grid; gap: 10px; justify-items: start; border-radius: 8px; background: var(--yellow-bg); color: var(--yellow-ink); font-size: 15px; line-height: 1.4; }
   .coach-tip p { margin: 0; }
   .coach-tip .k { min-height: 40px; padding: 0 14px; font-size: 15px; }
@@ -942,7 +949,14 @@
   // Study task 2 ("&extra"): point out the chat when the screen opens; typing, sending or "Got it" ends the tip.
   if (EXTRA) {
     const chat = $(".chat"), tip = bind("coach"), msg = $("#msg");
-    const endCoach = () => { chat.classList.remove("coach"); tip.hidden = true; };
+    // Gold motes start on the outline (top, left and right edges) and drift outwards.
+    const MOTES = [["10%", "2px", "-3px", "-15px"], ["28%", "2px", "4px", "-12px"], ["47%", "2px", "-2px", "-17px"], ["66%", "2px", "3px", "-13px"], ["86%", "2px", "-4px", "-15px"],
+      ["2px", "22%", "-14px", "-3px"], ["2px", "50%", "-12px", "3px"], ["2px", "78%", "-15px", "-2px"],
+      ["calc(100% - 2px)", "18%", "13px", "-4px"], ["calc(100% - 2px)", "44%", "15px", "2px"], ["calc(100% - 2px)", "70%", "12px", "-3px"], ["calc(100% - 2px)", "90%", "14px", "3px"]];
+    const GOLDS = ["#f2c94c", "#d4a017", "#fff1b8", "#e8b923"];
+    chat.insertAdjacentHTML("beforeend", MOTES.map(([x, y, dx, dy], i) =>
+      `<span class="mote" aria-hidden="true" style="--x:${x};--y:${y};--dx:${dx};--dy:${dy};--w:${((i * 0.53) % 3.2).toFixed(2)}s;--s:${4 + (i % 3)}px;--c:${GOLDS[i % GOLDS.length]}"></span>`).join(""));
+    const endCoach = () => { chat.classList.remove("coach"); tip.hidden = true; chat.querySelectorAll(".mote").forEach((m) => m.remove()); };
     chat.classList.add("coach");
     tip.hidden = false;
     tip.querySelector("[data-coach-ok]").addEventListener("click", () => { endCoach(); msg.focus(); });

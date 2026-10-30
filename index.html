@@ -448,7 +448,8 @@
     { key: "t2", start: "ready&extra", title: "Extra instrument",
       intro: "This task introduces IRIS's intelligent agent. You can talk to it in your own words to change what IRIS sorts, as you work.",
       prompt: "Before sorting begins, you notice a No. 3L handle on the incoming tray. It was used during the operation but is not included in the standard instrument set. Show what you would do next.",
-      useful: "How useful would the chat be for telling IRIS that a tray does not match the set?", usefulNa: "I did not use the chat, or cannot judge" },
+      useful: "How useful, if at all, would the chat be for telling IRIS how to handle an instrument outside the standard set?",
+      usefulOptions: ["Not at all useful", "Slightly useful", "Moderately useful", "Very useful", "Extremely useful", "I did not use the chat", "Cannot judge", "Not applicable to my work"] },
     { key: "t3", photo: true, title: "Review the result", prompt: "This is a different tray from task 2. Its set has five instruments, including a No. 3L handle. Sorting has finished. This example shows how the proposed result photo and instrument labels would appear. Review it as you would before the set moves to the next stage, then answer the questions below it." },
   ];
 
@@ -495,7 +496,11 @@
       <textarea id="${t.key}_review" name="${t.key}_review"></textarea>
     </fieldset>` +
     rate(`${t.key}_assess`, "How easy or difficult was it to assess the sorting result using this photo?", "Very difficult", "Very easy", "Unable to assess") +
-    rate(`${t.key}_confidence`, "How confident are you in your assessment of the sorting result shown?", "Not at all confident", "Very confident", "Unable to assess");
+    rate(`${t.key}_confidence`, "How confident are you in your assessment of the sorting result shown?", "Not at all confident", "Very confident", "Unable to assess") + `
+    <fieldset>
+      <label class="q" for="${t.key}_physical">What, if anything, would you still need to check directly on the physical tray before moving the set to the next stage? <span class="note">(optional)</span></label>
+      <textarea id="${t.key}_physical" name="${t.key}_physical"></textarea>
+    </fieldset>`;
   const PHOTO = `
     <figure class="review-shot">
       <picture>
@@ -512,17 +517,29 @@
       <div class="scale-ends"><span>0: ${low}</span><span>10: ${high}</span></div>
       ${na ? `<label class="choice na"><input type="radio" name="${name}" value="${na}"> ${na}</label>` : ""}
     </fieldset>`;
+  // A question answered by picking one of a list of labelled options.
+  const pick = (name, question, options) => `
+    <fieldset>
+      <legend>${question}</legend>
+      <div class="choices">${options.map((v) => `<label class="choice"><input type="radio" name="${name}" value="${v}"> ${v}</label>`).join("")}</div>
+    </fieldset>`;
   const ratings = (t) => rate(`${t.key}_ease`, "How easy or difficult was this task?", "Very difficult", "Very easy") +
-    (t.useful ? rate(`${t.key}_useful`, t.useful, "Not useful at all", "Very useful", t.usefulNa) : "");
+    (!t.useful ? "" : t.usefulOptions ? pick(`${t.key}_useful`, t.useful, t.usefulOptions) : rate(`${t.key}_useful`, t.useful, "Not useful at all", "Very useful", t.usefulNa));
   // Task 2 also asks how often a tray does not match its set (an extra or a missing
   // instrument, the cases in tasks 2 and 1), and whether typing at the station suits them.
+  const PRACTICAL = ["Very impractical", "Somewhat impractical", "Neither practical nor impractical", "Somewhat practical", "Very practical", "Cannot judge", "Not applicable to my work"];
   const FREQUENCY = ["Never", "Less than 1 in 100 trays", "About 1–4 in 100 trays", "About 5–9 in 100 trays", "About 10 or more in 100 trays", "I do not handle or check these trays", "Not sure"];
   const mismatch = () => `
     <fieldset>
       <legend>In your usual work, approximately how often does a tray contain at least one unexpected instrument or have an expected instrument missing?</legend>
       <p class="note">A rough estimate is fine.</p>
       <div class="choices">${FREQUENCY.map((v) => `<label class="choice"><input type="radio" name="t2_frequency" value="${v}"> ${v}</label>`).join("")}</div>
-    </fieldset>` + rate("t2_convenient", "How convenient would it be to type messages to IRIS at the sorting station?", "Very inconvenient", "Very convenient", "Cannot judge from this demonstration");
+    </fieldset>` +
+    pick("t2_practical", "How practical would it be to type instructions to IRIS during your usual work at the sorting station?", PRACTICAL) + `
+    <fieldset>
+      <label class="q" for="t2_typing_note">What, if anything, would make typing instructions difficult? <span class="note">(optional)</span></label>
+      <textarea id="t2_typing_note" name="t2_typing_note"></textarea>
+    </fieldset>`;
   // Task 1 then asks about "Sort without it", and about a tray where one instrument is left for the operator.
   const DISRUPTION = ["Not at all", "Slightly", "Moderately", "Very much", "Extremely", "Cannot judge", "Not applicable to my work"];
   const leftover = () => `
@@ -704,7 +721,7 @@
   document.getElementById("restart").addEventListener("click", () => show(0));
 
   // What must be answered before moving on. The "What did you do" boxes stay optional.
-  const taskDone = (...keys) => (keys.every((k) => answers[k]) ? "" : "Please answer each question about this task (the text box is optional).");
+  const taskDone = (...keys) => (keys.every((k) => answers[k]) ? "" : "Please answer each question about this task (the text boxes are optional).");
   const REQUIRED = {
     welcome: () => (answers.consent ? "" : "Please tick the box to agree before you start."),
     about: () => (!answers.position ? "Please choose your position." :
@@ -714,7 +731,7 @@
       !answers.years ? "Please say how long you have worked in this position." : ""),
     t1: () => (["t1_result", "t1_ease", "t1_useful", "t1_disruption"].every((k) => answers[k]) && (answers.t1_without || "").trim() ? "" :
       "Please answer each question about this task (only the last text box is optional)."),
-    t2: () => taskDone("t2_result", "t2_ease", "t2_useful", "t2_frequency", "t2_convenient"),
+    t2: () => taskDone("t2_result", "t2_ease", "t2_useful", "t2_frequency", "t2_practical"),
     t3: () => ((answers.t3_review || "").trim() && answers.t3_assess && answers.t3_confidence ? "" : "Please answer each question about the photo."),
     rating: () => (answers.umux_capabilities && answers.umux_easy ? "" : "Please answer both statements."),
     work: () => (!answers.stage ? "Please choose an answer about where it could fit." :
@@ -813,8 +830,8 @@
   // Keep in step with FIELDS in apps-script.gs.
   const FIELDS = ["response_id", "started_at", "minutes_taken", "position", "position_other", "activities", "activities_other", "years",
     "t1_result", "t1_ease", "t1_useful", "t1_without", "t1_disruption", "t1_disruption_note",
-    "t2_result", "t2_note", "t2_ease", "t2_useful", "t2_frequency", "t2_convenient",
-    "t3_review", "t3_assess", "t3_confidence",
+    "t2_result", "t2_note", "t2_ease", "t2_useful", "t2_frequency", "t2_practical", "t2_typing_note",
+    "t3_review", "t3_assess", "t3_confidence", "t3_physical",
     "umux_capabilities", "umux_easy", "t3_improve", "stage", "influence", "other"];
   const SEND_WAIT = 25000; // ms before an unanswered send counts as failed
   const within = (ms) => (AbortSignal.timeout ? AbortSignal.timeout(ms) : undefined);

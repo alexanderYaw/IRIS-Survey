@@ -156,15 +156,18 @@ What the less obvious columns hold:
 | `t1_result`, `t2_result` | "Were you able to complete this task?": Yes / Partly / No / Could not open or use the screen (a technical problem) |
 | `t2_note` | "What did you do, and what happened? Please describe anything that was unclear." (task 2 only) |
 | `t1_ease`, `t2_ease` | "How easy or difficult was this task?" 0 (very difficult) to 10 (very easy) |
-| `t1_useful`, `t2_useful` | How useful the function would be in their work, 0 (not useful at all) to 10 (very useful): the tray check, the chat. Or the text "Cannot judge, or not applicable to my work" (t1), "I did not use the chat, or cannot judge" (t2) |
+| `t1_useful` | "How useful would the tray check be in your work?" 0 (not useful at all) to 10 (very useful), or "Cannot judge, or not applicable to my work" |
+| `t2_useful` | "How useful, if at all, would the chat be for telling IRIS how to handle an instrument outside the standard set?" Not at all useful / Slightly useful / Moderately useful / Very useful / Extremely useful / I did not use the chat / Cannot judge / Not applicable to my work |
 | `t1_without` | "What would you expect to happen after selecting “Sort without it”? Please describe what IRIS would do and what you would need to do yourself." (text) |
 | `t1_disruption` | For a tray where IRIS sorts all but one instrument and leaves it on the input tray: "How much, if at all, would identifying and manually placing the remaining instrument disrupt your usual workflow?" Not at all / Slightly / Moderately / Very much / Extremely / Cannot judge / Not applicable to my work |
 | `t1_disruption_note` | "Please explain your answer. What, if anything, would make this manual step easier?" (optional text) |
 | `t2_frequency` | "In your usual work, approximately how often does a tray contain at least one unexpected instrument or have an expected instrument missing?": Never / Less than 1 in 100 trays / About 1–4 in 100 trays / About 5–9 in 100 trays / About 10 or more in 100 trays / I do not handle or check these trays / Not sure |
-| `t2_convenient` | How convenient typing to IRIS at the sorting station would be, 0 (very inconvenient) to 10 (very convenient), or "Cannot judge from this demonstration" |
+| `t2_practical` | "How practical would it be to type instructions to IRIS during your usual work at the sorting station?" Very impractical / Somewhat impractical / Neither practical nor impractical / Somewhat practical / Very practical / Cannot judge / Not applicable to my work |
+| `t2_typing_note` | "What, if anything, would make typing instructions difficult?" (optional text) |
 | `t3_review` | "What did you notice, and what would you do next with this set?" (text), given before they are told that the labels for slots 2 and 4 were swapped on purpose; see "Task 3" |
 | `t3_assess` | "How easy or difficult was it to assess the sorting result using this photo?" 0 (very difficult) to 10 (very easy), or "Unable to assess" |
 | `t3_confidence` | "How confident are you in your assessment of the sorting result shown?" 0 (not at all confident) to 10 (very confident), or "Unable to assess" |
+| `t3_physical` | "What, if anything, would you still need to check directly on the physical tray before moving the set to the next stage?" (optional text), before the reveal |
 | `t3_improve` | "What, if anything, would help you assess the result more accurately?" (optional text), after the reveal |
 | `stage` | Where the process could fit; "Another stage: …" includes the stage they typed |
 
